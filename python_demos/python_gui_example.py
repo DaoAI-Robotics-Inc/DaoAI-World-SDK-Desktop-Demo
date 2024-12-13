@@ -58,7 +58,9 @@ def visualize_and_save_result(daoai_image, prediction, output_path="python_demos
     try:
         logger.info("Visualizing results and saving to output image...")
         os.makedirs(output_path, exist_ok=True)
-        output_file = output_path + "/python_gui_example_output.png"
+        timestamp = time.strftime("%Y%m%d_%H%M%S")
+        timestamp = re.sub(r'[:]', '-', timestamp)  # Replace ':' to avoid invalid filename
+        output_file = os.path.join(output_path, f"python_gui_example_result_{timestamp}.png")
         result = dlsdk.visualize(daoai_image, prediction)
         result.save(output_file)
         logger.info(f"Visualization saved to: {output_file}\n")
@@ -218,8 +220,8 @@ class KeypointDetectionApp(QMainWindow):
         if prediction:
             timestamp = time.strftime("%Y%m%d_%H%M%S")
             timestamp = re.sub(r'[:]', '-', timestamp)  # Replace ':' to avoid invalid filename
-            output_path = os.path.join("python_demos/output/images", f"keypoint_result_{timestamp}.png")
-            os.makedirs("output", exist_ok=True)
+            output_path = os.path.join("python_demos/output/images")
+            os.makedirs(output_path, exist_ok=True)
             result_path = visualize_and_save_result(daoai_image, prediction, output_path)
 
             if result_path:

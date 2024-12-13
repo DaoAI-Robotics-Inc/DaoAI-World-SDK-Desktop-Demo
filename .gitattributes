@@ -1,4 +1,8 @@
 python_demos/data/instance_segmentation_model.dwm filter=lfs diff=lfs merge=lfs -text
 python_demos/data/keypoint_detection_model.dwm filter=lfs diff=lfs merge=lfs -text
-python_demos/data/defect_detection_model.dwm filter=lfs diff=lfs merge=lfs -text
+python_demos/data/object_detection_model.dwm filter=lfs diff=lfs merge=lfs -text
 python_demos/data/classification_model.dwm filter=lfs diff=lfs merge=lfs -text
+python_demos/data/positioning_model.dwm filter=lfs diff=lfs merge=lfs -text
+python_demos/data/supervised_defect_segmentation_model.dwm filter=lfs diff=lfs merge=lfs -text
+python_demos/data/presence_checking_model.dwm filter=lfs diff=lfs merge=lfs -text
+python_demos/data/unsupervised_defect_segmentation_model.dwm filter=lfs diff=lfs merge=lfs -text
