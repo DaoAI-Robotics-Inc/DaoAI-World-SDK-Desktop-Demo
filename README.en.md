@@ -56,10 +56,10 @@ Based on your development environment, choose the appropriate language and depen
     ```
 
 - **C++**:
-  - Refer to the instructions in `C++/README.md` to install dependencies suitable for your platform, including GUI-related libraries (such as Qt or other UI libraries).
+  - Refer to the instructions in `cpp_demos/README.md` to install dependencies suitable for your platform, including GUI-related libraries (such as Qt or other UI libraries).
 
 - **C#**:
-  - Refer to the instructions in `C#/README.md` to install required .NET libraries and tools, including GUI-related components (such as WinForms or WPF).
+  - Refer to the instructions in `cs_demos/README.md` to install required .NET libraries and tools, including GUI-related components (such as WinForms or WPF).
 
 ### 3. Run the Examples
 

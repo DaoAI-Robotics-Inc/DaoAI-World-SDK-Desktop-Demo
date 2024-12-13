@@ -57,10 +57,10 @@ cd DaoAI-World-SDK-Demo
     ```
 
 - **C++**:
-  - 请参考 `C++/README.md` 中的说明，安装适用于你的平台的依赖，包含图形界面所需的库（如 Qt 或其他 UI 库）。
+  - 请参考 `cpp_demos/README.md` 中的说明，安装适用于你的平台的依赖，包含图形界面所需的库（如 Qt 或其他 UI 库）。
 
 - **C#**:
-  - 请参考 `C#/README.md` 中的说明，安装所需的 .NET 库和工具，包含图形界面所需的组件（如 WinForms 或 WPF）。
+  - 请参考 `cs_demos/README.md` 中的说明，安装所需的 .NET 库和工具，包含图形界面所需的组件（如 WinForms 或 WPF）。
 
 ### 3. 运行示例
 
