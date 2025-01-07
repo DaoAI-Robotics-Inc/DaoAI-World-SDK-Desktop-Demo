@@ -1,3 +1,9 @@
 python_demos/output/
-.vscode
+.vscode/
+cpp_demos/DW_SDK_Cpp_Example/DW ImageClassification/x64
+cpp_demos/DW_SDK_Cpp_Example/DW KeypointDetection/x64
+cpp_demos/DW_SDK_Cpp_Example/DW SupervisedDefectSegmentation/x64
+cpp_demos/DW_SDK_Cpp_Example/DW UnsupervisedDefectSegmentation/x64
+cpp_demos/DW_SDK_Cpp_Example/DW_InstanceSegmentation/x64
+cpp_demos/DW_SDK_Cpp_Example/x64
 data/
