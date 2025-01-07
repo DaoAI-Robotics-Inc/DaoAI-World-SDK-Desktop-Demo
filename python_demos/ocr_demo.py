@@ -195,8 +195,8 @@ def main():
     logger.info("=== Starting OCR Demo ===\n")
 
     # Paths (update these to your environment)
-    model_path = r"python_demos\data\ocr_model.dwm"
-    image_path =  r"python_demos\data\ocr_img.png"
+    model_path = r"data\ocr_model.dwm"
+    image_path =  r"data\ocr_img.png"
 
     # Step 1: Initialize SDK
     initialize_sdk()

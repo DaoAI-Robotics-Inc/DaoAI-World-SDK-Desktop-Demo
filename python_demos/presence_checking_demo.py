@@ -193,8 +193,8 @@ def main():
     logger.info("=== Starting Presence Checking Demo ===\n")
 
     # Paths (update these to your environment)
-    model_path = r"python_demos\data\presence_checking_model.dwm"
-    image_path =  r"python_demos\data\presence_checking_img.png"
+    model_path = r"data\presence_checking_model.dwm"
+    image_path =  r"data\presence_checking_img.png"
 
     # Step 1: Initialize SDK
     initialize_sdk()

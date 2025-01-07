@@ -181,8 +181,8 @@ def main():
     logger.info("=== Starting Classification Demo ===\n")
 
     # Paths (update these to your environment)
-    model_path = r"python_demos\data\classification_model.dwm"
-    image_path =  r"python_demos\data\classification_img.png"
+    model_path = r"data\classification_model.dwm"
+    image_path =  r"data\classification_img.png"
 
     # Step 1: Initialize SDK
     initialize_sdk()

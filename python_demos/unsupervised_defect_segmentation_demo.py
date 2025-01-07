@@ -197,8 +197,8 @@ def main():
     logger.info("=== Starting Unsupervised Defect Segmentation Demo ===\n")
     
     # Paths (update these to your environment)
-    model_path = r"python_demos\data\unsupervised_defect_segmentation_model.dwm"
-    image_path =  r"python_demos\data\unsupervised_defect_segmentation_img.png"
+    model_path = r"data\unsupervised_defect_segmentation_model.dwm"
+    image_path =  r"data\unsupervised_defect_segmentation_img.png"
     # Step 1: Initialize SDK
     initialize_sdk()
     

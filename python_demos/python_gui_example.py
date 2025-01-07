@@ -256,7 +256,7 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
 
     # Update this path to your model file
-    model_path = r"python_demos\data\keypoint_detection_model.dwm"
+    model_path = r"data\keypoint_detection_model.dwm"
 
     initialize_sdk()
     main_window = KeypointDetectionApp(model_path)

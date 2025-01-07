@@ -211,8 +211,8 @@ def main():
     logger.info("=== Starting Positioning Demo ===\n")
 
     # Paths (update these to your environment)
-    model_path = r"python_demos\data\positioning_model.dwm"
-    image_path =  r"python_demos\data\positioning_img.bmp"
+    model_path = r"data\positioning_model.dwm"
+    image_path =  r"data\positioning_img.bmp"
 
     # Step 1: Initialize SDK
     initialize_sdk()

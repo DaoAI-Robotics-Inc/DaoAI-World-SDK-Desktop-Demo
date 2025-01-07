@@ -199,8 +199,8 @@ def main():
     logger.info("=== Starting Object Detection Demo ===\n")
 
     # Paths (update these to your environment)
-    model_path = r"python_demos\data\object_detection_model.dwm"
-    image_path =  r"python_demos\data\object_detection_img.png"
+    model_path = r"data\object_detection_model.dwm"
+    image_path =  r"data\object_detection_img.png"
 
     # Step 1: Initialize SDK
     initialize_sdk()
