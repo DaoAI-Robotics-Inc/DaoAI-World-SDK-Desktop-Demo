@@ -13,8 +13,8 @@ int main()
     std::cout << "Start DaoAI World \"unsupervised defectSegmentation\" model example !" << std::endl;
 
     std::string rootpath = "./data/";
-    std::string image_path = rootpath + "output/unsupervised_defect_segmentation_img.png";   //ͼ��·��
-    std::string model_path = rootpath + "output/unsupervised_defect_segmentation_model.dwm";    //ģ��·��
+    std::string image_path = rootpath + "unsupervised_defect_segmentation_img.png";   //ͼ��·��
+    std::string model_path = rootpath + "unsupervised_defect_segmentation_model.dwm";    //ģ��·��
 
     try
     {

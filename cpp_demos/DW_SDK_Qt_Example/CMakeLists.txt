@@ -14,7 +14,7 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 # DaoAI world 安装路径
-set(DAOAI_SDK_PATH "D:\\Program Files\\DaoAI World SDK\\DWSDK")
+set(DAOAI_SDK_PATH $ENV{DWSDK_PATH})
 
 # DaoAI world 头文件目录
 include_directories(${DAOAI_SDK_PATH}/include)

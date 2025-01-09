@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
-
+#include <QDir>
 
 #include <fstream>
 
@@ -35,11 +35,13 @@ void MainWindow::on_pushButton_LoadImage_clicked()
          * step 1: 选择图像路径
          */
         std::string image_path  = "./data/object_detection_img.png";
-
+        QFileInfo fileInfo(QString::fromStdString(image_path));
+        QString absolutePath = fileInfo.absoluteFilePath();
+        ui->textBrowser->append("Absolute path: " + absolutePath);
         /*
          * step 2: 调用 DaoAI API 加载图像
          */
-        m_daoai_image_ptr = std::make_unique<DaoAI::DeepLearning::Image>(image_path);
+        m_daoai_image_ptr = std::make_unique<DaoAI::DeepLearning::Image>(absolutePath.toStdString());
 
 
         ui->textBrowser->append("clicked button \"Load Image\" OK."); //显示进度
@@ -47,8 +49,9 @@ void MainWindow::on_pushButton_LoadImage_clicked()
         QImage image(QString(image_path.c_str()));
         displayImage(image); //显示图像
 
-    } catch (...) {
-        ui->textBrowser->append("clicked button \"Load Image\" Failed");
+    } catch (const std::exception &e) {
+        // Print the specific error message for standard exceptions
+        ui->textBrowser->append("clicked button \"Load Image\" Failed: " + QString::fromStdString(e.what()));
     }
 }
 

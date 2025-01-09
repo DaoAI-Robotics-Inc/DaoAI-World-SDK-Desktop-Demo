@@ -7,3 +7,6 @@ cpp_demos/DW_SDK_Cpp_Example/DW UnsupervisedDefectSegmentation/x64
 cpp_demos/DW_SDK_Cpp_Example/DW_InstanceSegmentation/x64
 cpp_demos/DW_SDK_Cpp_Example/x64
 data/
+cpp_demos/DW_SDK_Qt_Example/build
+cpp_demos/DW_SDK_Cpp_Example/bin
+cpp_demos/DW_SDK_Cpp_Example/.vs/DW_SDK_Cpp_Example/v16/ipch

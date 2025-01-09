@@ -44,7 +44,11 @@ git clone https://github.com/yourusername/DaoAI-World-SDK-Demo.git
 cd DaoAI-World-SDK-Demo
 ```
 
-### 2. Install Dependencies
+### 2. Download Sample Data
+
+Download [Data](https://daoairoboticsinc-my.sharepoint.com/:f:/g/personal/nrd_daoai_com/ElXWeD4qcbFLkto-NhXxgmsBlIEZ0G5iKVtdV_N0yPWfiQ?e=ViNAAL), locate `data.zip`, and extract it to the root directory.
+
+### 3. Install Dependencies
 
 Based on your development environment, choose the appropriate language and dependencies:
 
@@ -61,7 +65,7 @@ Based on your development environment, choose the appropriate language and depen
 - **C#**:
   - Refer to the instructions in `cs_demos/README.md` to install required .NET libraries and tools, including GUI-related components (such as WinForms or WPF).
 
-### 3. Run the Examples
+### 4. Run the Examples
 
 - **Python**:
   - **Basic Usage Example**: Run the Python example code:

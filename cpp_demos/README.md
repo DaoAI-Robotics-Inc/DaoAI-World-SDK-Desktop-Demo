@@ -1,165 +1,198 @@
 # **DaoAI World SDK C++ 环境配置**
 
-## **1. 正确安装最新版 DaoAI World SDK**
-参考网站：
-[DW_SDK Windows安装包 — DaoAI World User Manual 2024.7 documentation](http://docs.welinkirt.com/daoai-world-user-manual/latest/develop/install.html#)
+## **1. 安装最新版 DaoAI World SDK**
+请参考以下链接：  
+[DW_SDK Windows 安装包 — DaoAI World User Manual 2024.7 documentation](http://docs.welinkirt.com/daoai-world-user-manual/latest/develop/install.html#)
 
 ---
 
-## **2. CMake 和 Qt 环境配置**
+## **代码参考**
+参考项目：`DW_SDK_Qt_Example`
+
+### **代码使用步骤**
+1. **打开项目**  
+   打开 QtCreator，选择“打开已有项目”，并选中 `DW_SDK_Qt_Example` 下的 `CMakeLists.txt` 文件。  
+   ![打开项目](image/open_qt.png)
+
+2. **配置项目**  
+   确保 Build 模式为 **Release**。  
+   ![项目配置](image/prj_config.png)
+
+3. **运行项目**  
+   点击“运行”，开始运行项目。  
+   ![运行项目](image/run.png)  
+
+   将数据放置到您的 Build 目录下，例如：  
+   `DW_SDK_Qt_Example\build\Desktop_Qt_6_5_3_MSVC2019_64bit-Release\bin\data`  
+   ![数据目录](image/data.png)
+
+   然后依次点击按钮，使用模型推理并获取结果：  
+   ![运行结果](image/result.png)
+
+---
+
+## **新项目配置**
 
 ### **Qt 安装与新建项目**
 
-#### 1. 正确安装 Qt（以 Qt6 为例）
+#### 1. 安装 Qt（以 Qt6 为例）  
+按照官网指南正确安装 Qt。
 
-#### 2. 新建 Qt 项目
-选择 **Qt Widgets Application**：
-
+#### 2. 新建 Qt 项目  
+打开 QtCreator，新建一个项目，选择 **Qt Widgets Application**：  
 ![Qt Widgets Application](image/Picture1.png)
 
-#### 3. 项目名称和路径设置
+#### 3. 设置项目名称与路径  
+![设置项目名称与路径](image/Picture2.png)
 
-![Project Name and Path](image/Picture2.png)
+#### 4. 选择构建系统为 CMake  
+![选择 CMake 构建系统](image/Picture3.png)
 
-#### 4. 构建系统选择 CMake
-
-![CMake Build System](image/Picture3.png)
-
-#### 5. 点击下一步完成构建
-
-![Complete Build](image/Picture4.png)
+#### 5. 完成构建  
+点击“下一步”完成构建。  
+![完成构建](image/Picture4.png)
 
 ---
 
 ### **选择 MSVC2019 构建套件**
 
-#### 1. 设置构建套件为 MSVC2019
+#### 1. 设置构建套件为 MSVC2019  
+![选择 MSVC2019 构建套件](image/Picture5.png)
 
-![MSVC2019 Kit](image/Picture5.png)
-
-#### 2. 点击下一步完成构建。
+#### 2. 点击“下一步”完成配置。
 
 ---
 
 ### **生成空工程并验证环境**
 
-#### 1. 在生成的空工程中选择 **Release** 并生成。
+1. 在生成的空工程中，选择 **Release** 模式并生成。  
+2. 如果空工程生成成功，则表示 C++ 环境配置正确无误。
 
-#### 2. 如果空工程生成成功，即代表 C++ 环境配置无误。
-
-> **注意**：
-> 笔者使用的是 **Qt6** 构建工程（Qt5 亦可，CMake 略有不同，但操作一致）。
+> **注意**：  
+> 笔者使用 **Qt6** 构建工程（Qt5 亦可，CMake 配置略有不同，但操作基本一致）。
 
 ---
 
 ### **自动生成基础 `CMakeLists.txt`**
 
-Qt 会自动生成基础的 `CMakeLists.txt`，如下图所示：
-
+Qt 会自动生成基础的 `CMakeLists.txt`，如下所示：  
 ![CMakeLists.txt](image/Picture6.png)
 
 ---
 
 ## **CMake 配置关键点**
 
-在 CMake 的红框部分注意以下项：
+在 CMake 的红框部分，请注意以下配置：  
 
-1. 指定 C++ 标准为 **C++17**
-2. 设置 DaoAI World SDK 的安装目录
-3. 指定 DaoAI World SDK 头文件目录
-4. 指定 DaoAI World SDK Lib 库目录
-5. 将构建环境设为 **Release**
+1. 指定 C++ 标准为 **C++17**。  
+2. 设置 DaoAI World SDK 的安装目录。  
+3. 指定 DaoAI World SDK 的头文件目录。  
+4. 指定 DaoAI World SDK 的库文件目录（Lib）。  
+5. 将构建模式设为 **Release**。
 
 ---
 
 ## **完成环境配置，开始编程**
 
-设置好以上环境后，即可开始编程。
+完成以上环境配置后，您即可开始编程开发。
 
-### **代码参考**
-请参考项目：
-DW_SDK_Qt_Example
 
 ---
 
 # **DaoAI World SDK C++ Environment Setup**
 
 ## **1. Install the Latest Version of DaoAI World SDK**
-Refer to the documentation:
-[DW_SDK Windows Installation Package — DaoAI World User Manual 2024.7 documentation](http://docs.welinkirt.com/daoai-world-user-manual/latest/develop/install.html#)
+Refer to the following link for installation details:  
+[DW_SDK Windows Installer — DaoAI World User Manual 2024.7 documentation](http://docs.welinkirt.com/daoai-world-user-manual/latest/develop/install.html#)
 
 ---
 
-## **2. CMake and Qt Environment Configuration**
+## **Code Reference**
+Reference project: `DW_SDK_Qt_Example`
 
-### **Qt Installation and New Project Setup**
+### **Steps to Use the Code**
+1. **Open the Project**  
+   Open QtCreator, select "Open Project," and choose the `CMakeLists.txt` file in the `DW_SDK_Qt_Example` directory.  
+   ![Open Project](image/open_qt.png)
 
-#### 1. Correctly Install Qt (Using Qt6 as an Example)
+2. **Configure the Project**  
+   Ensure the build mode is set to **Release**.  
+   ![Configure Project](image/prj_config.png)
 
-#### 2. Create a New Qt Project
-Select **Qt Widgets Application**:
+3. **Run the Project**  
+   Click "Run" to start the project.  
+   ![Run Project](image/run.png)  
 
+   Place your data files in the build directory, such as:  
+   `DW_SDK_Qt_Example\build\Desktop_Qt_6_5_3_MSVC2019_64bit-Release\bin\data`  
+   ![Data Directory](image/data.png)
+
+   Then click the buttons sequentially to perform model inference and obtain results:  
+   ![Results](image/result.png)
+
+---
+
+## **New Project Setup**
+
+### **Installing Qt and Creating a New Project**
+
+#### 1. Install Qt (Using Qt6 as an Example)  
+Follow the official guide to install Qt correctly.
+
+#### 2. Create a New Qt Project  
+Open QtCreator and create a new project. Select **Qt Widgets Application**:  
 ![Qt Widgets Application](image/Picture1.png)
 
-#### 3. Set Project Name and Path
+#### 3. Set Project Name and Path  
+![Set Project Name and Path](image/Picture2.png)
 
-![Project Name and Path](image/Picture2.png)
+#### 4. Choose the Build System as CMake  
+![Choose CMake Build System](image/Picture3.png)
 
-#### 4. Select CMake as the Build System
-
-![CMake Build System](image/Picture3.png)
-
-#### 5. Click "Next" to Complete the Build
-
+#### 5. Complete the Build  
+Click "Next" to complete the build process.  
 ![Complete Build](image/Picture4.png)
 
 ---
 
-### **Select MSVC2019 Build Kit**
+### **Selecting MSVC2019 Build Kit**
 
-#### 1. Configure MSVC2019 as the Build Kit
+#### 1. Set the Build Kit to MSVC2019  
+![Select MSVC2019 Build Kit](image/Picture5.png)
 
-![MSVC2019 Kit](image/Picture5.png)
-
-#### 2. Click "Next" to Complete the Build.
+#### 2. Click "Next" to finish the setup.
 
 ---
 
 ### **Generate an Empty Project and Verify the Environment**
 
-#### 1. In the generated empty project, select **Release** and build.
+1. In the generated empty project, select **Release** mode and build the project.  
+2. If the empty project builds successfully, the C++ environment is properly configured.
 
-#### 2. If the empty project builds successfully, the C++ environment is correctly configured.
-
-> **Note**:
-> The example uses **Qt6** to create the project (Qt5 is also supported with slight differences in CMake, but the operations are similar).
+> **Note**:  
+> This guide uses **Qt6** for project building (Qt5 is also supported, with slight differences in CMake configuration).
 
 ---
 
-### **Automatically Generated Basic `CMakeLists.txt`**
+### **Auto-Generated `CMakeLists.txt`**
 
-Qt will automatically generate a basic `CMakeLists.txt` file as shown below:
-
+Qt will automatically generate a basic `CMakeLists.txt` file, as shown below:  
 ![CMakeLists.txt](image/Picture6.png)
 
 ---
 
 ## **Key Points for CMake Configuration**
 
-In the highlighted parts of the CMake file, ensure the following settings:
+Pay attention to the following in the highlighted sections of the `CMakeLists.txt` file:  
 
-1. Specify the C++ standard as **C++17**
-2. Set the installation directory of DaoAI World SDK
-3. Specify the header file directory of DaoAI World SDK
-4. Specify the library directory of DaoAI World SDK
-5. Set the build environment to **Release**
+1. Specify the C++ standard as **C++17**.  
+2. Set the installation directory for DaoAI World SDK.  
+3. Specify the header file directory for DaoAI World SDK.  
+4. Specify the library (Lib) directory for DaoAI World SDK.  
+5. Set the build mode to **Release**.
 
 ---
 
-## **Complete the Configuration and Start Programming**
+## **Start Programming**
 
-Once the above environment is set up, you can start programming.
-
-### **Code Reference**
-Refer to the project:
-DW_SDK_Qt_Example
+Once the environment is configured, you are ready to start programming.
