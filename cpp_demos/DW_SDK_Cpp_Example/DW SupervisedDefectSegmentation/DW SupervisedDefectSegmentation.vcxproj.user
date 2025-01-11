@@ -3,6 +3,5 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LocalDebuggerEnvironment>PATH=$(DWSDK_PATH)\bin;$(DWSDK_PATH)\3rdparty;</LocalDebuggerEnvironment>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerWorkingDirectory>C:\Users\daoai\Documents\DWSDK_Demo\</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
 </Project>

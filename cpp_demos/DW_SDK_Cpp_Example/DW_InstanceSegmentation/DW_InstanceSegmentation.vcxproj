@@ -24,6 +24,7 @@
     <ProjectGuid>{da2109cf-82ce-474e-9819-246331e2e9be}</ProjectGuid>
     <RootNamespace>DWInstanceSegmentation</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>DW InstanceSegmentation</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -83,7 +84,7 @@
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>D:\Program Files\DaoAI World SDK\DWSDK\include;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)\\bin</OutDir>
-    <TargetName>DW InsttanceSegmentation</TargetName>
+    <TargetName>DW InstanceSegmentation</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

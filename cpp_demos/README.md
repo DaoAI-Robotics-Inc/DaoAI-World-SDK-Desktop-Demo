@@ -5,8 +5,12 @@
 [DW_SDK Windows 安装包 — DaoAI World User Manual 2024.7 documentation](http://docs.welinkirt.com/daoai-world-user-manual/latest/develop/install.html#)
 
 ---
+## **C++ 项目参考**
 
-## **代码参考**
+
+
+
+## **QT项目参考**
 参考项目：`DW_SDK_Qt_Example`
 
 ### **代码使用步骤**
@@ -107,7 +111,7 @@ Refer to the following link for installation details:
 
 ---
 
-## **Code Reference**
+## **QT Application Code Reference**
 Reference project: `DW_SDK_Qt_Example`
 
 ### **Steps to Use the Code**
