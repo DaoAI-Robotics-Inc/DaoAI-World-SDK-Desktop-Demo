@@ -45,7 +45,11 @@ git clone https://github.com/yourusername/DaoAI-World-SDK-Demo.git
 cd DaoAI-World-SDK-Demo
 ```
 
-### 2. 安装依赖
+### 2. 下载示例数据
+
+下载 [Data](https://daoairoboticsinc-my.sharepoint.com/:f:/g/personal/nrd_daoai_com/ElXWeD4qcbFLkto-NhXxgmsBlIEZ0G5iKVtdV_N0yPWfiQ?e=ViNAAL) 下的 data.zip 并解压到根目录。
+
+### 3. 安装依赖
 
 根据你的开发环境，选择合适的语言和依赖：
 
@@ -57,12 +61,12 @@ cd DaoAI-World-SDK-Demo
     ```
 
 - **C++**:
-  - 请参考 `C++/README.md` 中的说明，安装适用于你的平台的依赖，包含图形界面所需的库（如 Qt 或其他 UI 库）。
+  - 请参考 `cpp_demos/README.md` 中的说明，安装适用于你的平台的依赖，包含图形界面所需的库（如 Qt 或其他 UI 库）。
 
 - **C#**:
-  - 请参考 `C#/README.md` 中的说明，安装所需的 .NET 库和工具，包含图形界面所需的组件（如 WinForms 或 WPF）。
+  - 请参考 `cs_demos/README.md` 中的说明，安装所需的 .NET 库和工具，包含图形界面所需的组件（如 WinForms 或 WPF）。
 
-### 3. 运行示例
+### 4. 运行示例
 
 - **Python**：
   - **简单使用示例**：运行 Python 示例代码：
