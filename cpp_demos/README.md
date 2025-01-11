@@ -6,8 +6,17 @@
 
 ---
 ## **C++ 项目参考**
+参考项目：`DW_SDK_Cpp_Example`
 
+### **代码使用步骤**
+1. **打开项目**  
+使用Visual Studio打开 `DW_SDK_Cpp_Example.sln`
+   ![打开项目](image/cpp_open.png)
 
+下载 [Data](https://daoairoboticsinc-my.sharepoint.com/:f:/g/personal/nrd_daoai_com/ElXWeD4qcbFLkto-NhXxgmsBlIEZ0G5iKVtdV_N0yPWfiQ?e=ViNAAL) 下的 data.zip 并解压到根目录。
+
+选择 Release x64，选择一个启动项目，然后运行。
+   ![打开项目](image/cpp_run.png)
 
 
 ## **QT项目参考**
@@ -105,98 +114,116 @@ Qt 会自动生成基础的 `CMakeLists.txt`，如下所示：
 
 # **DaoAI World SDK C++ Environment Setup**
 
-## **1. Install the Latest Version of DaoAI World SDK**
-Refer to the following link for installation details:  
-[DW_SDK Windows Installer — DaoAI World User Manual 2024.7 documentation](http://docs.welinkirt.com/daoai-world-user-manual/latest/develop/install.html#)
+## **1. Install the Latest DaoAI World SDK**
+Please refer to the following link:  
+[DW_SDK Windows Installation Package — DaoAI World User Manual 2024.7 Documentation](http://docs.welinkirt.com/daoai-world-user-manual/latest/develop/install.html#)
 
 ---
 
-## **QT Application Code Reference**
-Reference project: `DW_SDK_Qt_Example`
+## **C++ Project Reference**
+Reference Project: `DW_SDK_Cpp_Example`
 
 ### **Steps to Use the Code**
 1. **Open the Project**  
-   Open QtCreator, select "Open Project," and choose the `CMakeLists.txt` file in the `DW_SDK_Qt_Example` directory.  
+   Open `DW_SDK_Cpp_Example.sln` using Visual Studio.  
+   ![Open Project](image/cpp_open.png)
+
+2. **Download Data**  
+   Download the [Data](https://daoairoboticsinc-my.sharepoint.com/:f:/g/personal/nrd_daoai_com/ElXWeD4qcbFLkto-NhXxgmsBlIEZ0G5iKVtdV_N0yPWfiQ?e=ViNAAL) package and extract `data.zip` into the project root directory.
+
+3. **Select Build Configuration and Run**  
+   Choose `Release x64`, select a startup project, and run the project.  
+   ![Run Project](image/cpp_run.png)
+
+---
+
+## **Qt Project Reference**
+Reference Project: `DW_SDK_Qt_Example`
+
+### **Steps to Use the Code**
+1. **Open the Project**  
+   Open QtCreator, select **Open Existing Project**, and choose the `CMakeLists.txt` file in the `DW_SDK_Qt_Example` folder.  
    ![Open Project](image/open_qt.png)
 
 2. **Configure the Project**  
    Ensure the build mode is set to **Release**.  
-   ![Configure Project](image/prj_config.png)
+   ![Project Configuration](image/prj_config.png)
 
 3. **Run the Project**  
-   Click "Run" to start the project.  
-   ![Run Project](image/run.png)  
+   Click **Run** to start the project.  
+   ![Run Project](image/run.png)
 
-   Place your data files in the build directory, such as:  
+   Place the required data in your build directory, such as:  
    `DW_SDK_Qt_Example\build\Desktop_Qt_6_5_3_MSVC2019_64bit-Release\bin\data`  
    ![Data Directory](image/data.png)
 
-   Then click the buttons sequentially to perform model inference and obtain results:  
+   Then click the buttons in sequence to perform model inference and view the results:  
    ![Results](image/result.png)
 
 ---
 
 ## **New Project Setup**
 
-### **Installing Qt and Creating a New Project**
+### **Installing and Creating a Qt Project**
 
-#### 1. Install Qt (Using Qt6 as an Example)  
-Follow the official guide to install Qt correctly.
+#### 1. Install Qt (e.g., Qt6)  
+   Follow the official documentation to install Qt.
 
 #### 2. Create a New Qt Project  
-Open QtCreator and create a new project. Select **Qt Widgets Application**:  
-![Qt Widgets Application](image/Picture1.png)
+   Open QtCreator, create a new project, and select **Qt Widgets Application**:  
+   ![Qt Widgets Application](image/Picture1.png)
 
 #### 3. Set Project Name and Path  
-![Set Project Name and Path](image/Picture2.png)
+   ![Set Project Name and Path](image/Picture2.png)
 
-#### 4. Choose the Build System as CMake  
-![Choose CMake Build System](image/Picture3.png)
+#### 4. Select CMake as the Build System  
+   ![Select CMake Build System](image/Picture3.png)
 
 #### 5. Complete the Build  
-Click "Next" to complete the build process.  
-![Complete Build](image/Picture4.png)
+   Click **Next** to finish the setup.  
+   ![Complete Build](image/Picture4.png)
 
 ---
 
 ### **Selecting MSVC2019 Build Kit**
 
-#### 1. Set the Build Kit to MSVC2019  
-![Select MSVC2019 Build Kit](image/Picture5.png)
+#### 1. Configure MSVC2019 as the Build Kit  
+   ![Select MSVC2019 Build Kit](image/Picture5.png)
 
-#### 2. Click "Next" to finish the setup.
+#### 2. Click **Next** to finish the configuration.
 
 ---
 
 ### **Generate an Empty Project and Verify the Environment**
 
-1. In the generated empty project, select **Release** mode and build the project.  
-2. If the empty project builds successfully, the C++ environment is properly configured.
+1. In the generated project, select **Release** mode and build it.  
+2. If the build succeeds, your C++ environment is correctly configured.
 
 > **Note**:  
-> This guide uses **Qt6** for project building (Qt5 is also supported, with slight differences in CMake configuration).
+> This guide uses **Qt6** for project setup (Qt5 is also supported, but CMake configurations might vary slightly).
 
 ---
 
-### **Auto-Generated `CMakeLists.txt`**
+### **Auto-Generated Basic `CMakeLists.txt`**
 
-Qt will automatically generate a basic `CMakeLists.txt` file, as shown below:  
+Qt automatically generates a basic `CMakeLists.txt`, as shown below:  
 ![CMakeLists.txt](image/Picture6.png)
 
 ---
 
-## **Key Points for CMake Configuration**
+## **CMake Configuration Key Points**
 
-Pay attention to the following in the highlighted sections of the `CMakeLists.txt` file:  
+In the highlighted sections of the CMake file, ensure the following configurations:
 
 1. Specify the C++ standard as **C++17**.  
 2. Set the installation directory for DaoAI World SDK.  
-3. Specify the header file directory for DaoAI World SDK.  
-4. Specify the library (Lib) directory for DaoAI World SDK.  
+3. Add the header file directory for DaoAI World SDK.  
+4. Add the library directory (`Lib`) for DaoAI World SDK.  
 5. Set the build mode to **Release**.
 
 ---
 
-## **Start Programming**
+## **Start Development**
 
-Once the environment is configured, you are ready to start programming.
+With the environment successfully configured, you are ready to start development!
+
