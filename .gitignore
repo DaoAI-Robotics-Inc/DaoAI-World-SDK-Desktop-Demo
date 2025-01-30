@@ -40,4 +40,6 @@ cs_demos/unsupervised_defect_segmentation/unsupervised_defect_segmentation/obj
 cs_demos/WinFormsApp1/bin
 cs_demos/WinFormsApp1/obj
 **/.vs/
+**/x64/
+cpp_demos/DW_SDK_Cpp_Example/DW AutoSegmentation/x64
 
