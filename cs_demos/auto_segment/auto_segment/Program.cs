@@ -9,26 +9,34 @@ using Emgu.CV.UI;
 using Newtonsoft.Json;
 using System.Windows.Forms;
 using DaoAI.DeepLearningCLI;
+using System.Threading; // Include this namespace for Thread.Sleep
 
 namespace AutoSegmentationApp
 {
     public class AutoSegmentationProcessor
     {
-        private List<System.Drawing.Point> clickedPoints = new List<System.Drawing.Point>();
-        private List<System.Drawing.Box> drawnBoxes = new List<System.Drawing.Box>();
+        private List<DaoAI.DeepLearningCLI.Point> clickedPoints = new List<DaoAI.DeepLearningCLI.Point>();
+        private List<DaoAI.DeepLearningCLI.Box> drawnBoxes = new List<DaoAI.DeepLearningCLI.Box>();
         private bool isDrawing = false;
-        private System.Drawing.Point startPoint;
+        private DaoAI.DeepLearningCLI.Point startPoint;
         private Mat originalImage;
         private DaoAI.DeepLearningCLI.Vision.AutoSegmentation model;
         private DaoAI.DeepLearningCLI.Vision.ImageEmbedding embedding;
         private const int DragThreshold = 5;
         private const string WindowName = "Image Viewer";
-
-        private readonly string imagePath = @"data\instance_segmentation_img.jpg";
-        private readonly string modelPath = @"data\auto_segment.dwm";
+        private readonly string imagePath = "../../../../../../../Data/instance_segmentation_img.jpg";
+        private readonly string modelPath = "../../../../../../../Data/auto_segment.dwm";
 
         public void Run()
         {
+            string absoluteImagePath = Path.GetFullPath(imagePath);
+            string absoluteModelPath = Path.GetFullPath(modelPath);
+
+            Console.WriteLine("Absolute Image Path: " + absoluteImagePath);
+            Console.WriteLine("Absolute Model Path: " + absoluteModelPath);
+            //Thread.Sleep(5000); // Time is in milliseconds, so 5000 ms = 5 seconds
+
+
             // 初始化深度学习SDK
             DaoAI.DeepLearningCLI.Application.initialize(false,0);
 
@@ -46,7 +54,7 @@ namespace AutoSegmentationApp
                 model = new DaoAI.DeepLearningCLI.Vision.AutoSegmentation(modelPath, DaoAI.DeepLearningCLI.DeviceType.GPU, -1);
 
                 var sdkImage = new DaoAI.DeepLearningCLI.Image(imagePath);
-                embedding = model.GenerateImageEmbeddings(sdkImage);
+                embedding = model.generateImageEmbeddings(sdkImage);
             }
             catch (Exception ex)
             {
@@ -80,7 +88,8 @@ namespace AutoSegmentationApp
             if (e.Button == MouseButtons.Left)
             {
                 isDrawing = true;
-                startPoint = e.Location;
+                startPoint.X = e.Location.X;
+                startPoint.Y = e.Location.Y;
             }
         }
 
@@ -92,9 +101,16 @@ namespace AutoSegmentationApp
             if (Math.Abs(e.X - startPoint.X) > DragThreshold ||
                 Math.Abs(e.Y - startPoint.Y) > DragThreshold)
             {
-                CvInvoke.Rectangle(currentImage,
-                    new Rectangle(startPoint, new Size(e.X - startPoint.X, e.Y - startPoint.Y)),
-                    new MCvScalar(0, 255, 0), 2);
+                // Properly balance parentheses and syntax
+                CvInvoke.Rectangle(
+                    currentImage,
+                    new Rectangle(
+                        new System.Drawing.Point((int)Math.Round(startPoint.X), (int)Math.Round(startPoint.Y)),
+                        new Size(e.X - (int)Math.Round(startPoint.X), e.Y - (int)Math.Round(startPoint.Y))
+                    ),
+                    new MCvScalar(0, 255, 0),  // Color for the rectangle (green)
+                    2  // Line thickness
+                );
                 UpdateDisplay(currentImage);
             }
         }
@@ -105,13 +121,13 @@ namespace AutoSegmentationApp
 
             if (e.Button == MouseButtons.Left)
             {
-                if (startPoint == e.Location)
+                if (startPoint.X == e.Location.X && startPoint.Y == e.Location.Y)
                 {
                     clickedPoints.Add(new DaoAI.DeepLearningCLI.Point(e.X, e.Y, "1"));
                 }
                 else
                 {
-                    drawnBoxes.Add(new DaoAI.DeepLearningCLI.Box(startPoint, e.Location));
+                    drawnBoxes.Add(new DaoAI.DeepLearningCLI.Box(startPoint, new DaoAI.DeepLearningCLI.Point(e.Location.X, e.Location.Y),0));
                 }
                 RunInference();
             }
@@ -128,9 +144,22 @@ namespace AutoSegmentationApp
 
             try
             {
-                var result = model.Inference(embedding, drawnBoxes, clickedPoints);
-                SaveResult(result);
-                UpdateMaskDisplay(result.Mask);
+                // Convert List<DaoAI.DeepLearningCLI.Point> to Point[][]
+                var clickedPointsArray = new DaoAI.DeepLearningCLI.Point[1][];  // Create a 2D array with 1 row
+                clickedPointsArray[0] = clickedPoints.ToArray();  // Convert List<DaoAI.DeepLearningCLI.Point> to an array and assign to the row
+
+                // Convert List<DaoAI.DeepLearningCLI.Box> to Box[][]
+                var drawnBoxesArray = new DaoAI.DeepLearningCLI.Box[1][];  // Create a 2D array with 1 row
+                drawnBoxesArray[0] = drawnBoxes.ToArray();  // Convert List<DaoAI.DeepLearningCLI.Box> to an array and assign to the row
+
+                // Convert embedding to an array (if necessary)
+                var embeddingArray = new DaoAI.DeepLearningCLI.Vision.ImageEmbedding[] { embedding };
+
+                // Now call the inference method with the correct arguments
+                var result = model.inference(embeddingArray, drawnBoxesArray, clickedPointsArray);
+
+                SaveResult(result[0]);
+                UpdateMaskDisplay(result[0].mask);
             }
             catch (Exception ex)
             {

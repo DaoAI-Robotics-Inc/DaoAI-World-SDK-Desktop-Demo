@@ -14,7 +14,7 @@
 
   <ItemGroup>
     <Reference Include="dl_sdk_net">
-      <HintPath>..\..\..\..\..\..\..\Program Files\DaoAI World SDK\DWSDK\bin\dl_sdk_net.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Program Files\DaoAI World SDK\SDK\Windows\x64\Release\lib\dl_sdk_net.dll</HintPath>
     </Reference>
   </ItemGroup>
 

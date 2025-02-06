@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LocalDebuggerEnvironment>PATH=$(DWSDK_PATH)\bin;$(DWSDK_PATH)\3rdparty;</LocalDebuggerEnvironment>
+    <LocalDebuggerEnvironment>PATH=$(DWSDK_PATH)\x64\Release\lib;$(DWSDK_PATH)\x64\Release\3rdparty;</LocalDebuggerEnvironment>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
 </Project>

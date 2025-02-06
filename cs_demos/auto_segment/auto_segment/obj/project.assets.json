@@ -29,6 +29,15 @@
           "lib/netstandard2.0/Emgu.CV.Bitmap.dll": {}
         }
       },
+      "Emgu.CV.runtime.windows/4.4.0.4061": {
+        "type": "package",
+        "dependencies": {
+          "Emgu.CV": "[4.4.0, 4.4.1)"
+        },
+        "build": {
+          "build/Emgu.CV.runtime.windows.targets": {}
+        }
+      },
       "Emgu.CV.UI/4.4.0.4061": {
         "type": "package",
         "dependencies": {
@@ -349,6 +358,37 @@
         "icon.png",
         "lib/netstandard2.0/Emgu.CV.Bitmap.dll",
         "lib/netstandard2.0/Emgu.CV.Bitmap.xml"
+      ]
+    },
+    "Emgu.CV.runtime.windows/4.4.0.4061": {
+      "sha512": "oawzTOt/Ni9g88G67IlTNiYcfdOs314/Hn/cgwhHuqCLa9nxEiqPCTLCflGro/gAJnPLXj3VkXqqfRkjRzR2rQ==",
+      "type": "package",
+      "path": "emgu.cv.runtime.windows/4.4.0.4061",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.txt",
+        "build/Emgu.CV.runtime.windows.targets",
+        "build/x64/concrt140.dll",
+        "build/x64/cvextern.dll",
+        "build/x64/msvcp140.dll",
+        "build/x64/msvcp140_1.dll",
+        "build/x64/msvcp140_2.dll",
+        "build/x64/msvcp140_codecvt_ids.dll",
+        "build/x64/opencv_videoio_ffmpeg440_64.dll",
+        "build/x64/vcruntime140.dll",
+        "build/x64/vcruntime140_1.dll",
+        "build/x86/concrt140.dll",
+        "build/x86/cvextern.dll",
+        "build/x86/msvcp140.dll",
+        "build/x86/msvcp140_1.dll",
+        "build/x86/msvcp140_2.dll",
+        "build/x86/msvcp140_codecvt_ids.dll",
+        "build/x86/opencv_videoio_ffmpeg440.dll",
+        "build/x86/vcruntime140.dll",
+        "emgu.cv.runtime.windows.4.4.0.4061.nupkg.sha512",
+        "emgu.cv.runtime.windows.nuspec",
+        "icon.png"
       ]
     },
     "Emgu.CV.UI/4.4.0.4061": {
@@ -1496,6 +1536,7 @@
     "net5.0-windows7.0": [
       "Emgu.CV >= 4.4.0.4061",
       "Emgu.CV.UI >= 4.4.0.4061",
+      "Emgu.CV.runtime.windows >= 4.4.0.4061",
       "Newtonsoft.Json >= 13.0.3",
       "System.Drawing.Common >= 5.0.2"
     ]
@@ -1544,6 +1585,10 @@
             "version": "[4.4.0.4061, )"
           },
           "Emgu.CV.UI": {
+            "target": "Package",
+            "version": "[4.4.0.4061, )"
+          },
+          "Emgu.CV.runtime.windows": {
             "target": "Package",
             "version": "[4.4.0.4061, )"
           },

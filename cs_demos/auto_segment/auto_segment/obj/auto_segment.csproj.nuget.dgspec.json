@@ -48,6 +48,10 @@
               "target": "Package",
               "version": "[4.4.0.4061, )"
             },
+            "Emgu.CV.runtime.windows": {
+              "target": "Package",
+              "version": "[4.4.0.4061, )"
+            },
             "Newtonsoft.Json": {
               "target": "Package",
               "version": "[13.0.3, )"

@@ -1,11 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "yINFlaedGlfyhAsFqB1dWK5c1yWHP6IBRhzgnOCdGv6M10kQtrx4qygVTgc+HD+4mY1drNYlJYFbP7y6G4NDvA==",
+  "dgSpecHash": "JRNJnJf4wmeRX/yHUDhDiKd1/EmqIF1f/3FHJwGC9cjUudjLcIdk3ZA5PT9iB204gn6yMx3wK/Zqr+8vpIpOQA==",
   "success": true,
   "projectFilePath": "C:\\Users\\daoai\\Documents\\DWSDK_Demo\\cs_demos\\auto_segment\\auto_segment\\auto_segment.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\daoai\\.nuget\\packages\\emgu.cv\\4.4.0.4061\\emgu.cv.4.4.0.4061.nupkg.sha512",
     "C:\\Users\\daoai\\.nuget\\packages\\emgu.cv.bitmap\\4.4.0.4061\\emgu.cv.bitmap.4.4.0.4061.nupkg.sha512",
+    "C:\\Users\\daoai\\.nuget\\packages\\emgu.cv.runtime.windows\\4.4.0.4061\\emgu.cv.runtime.windows.4.4.0.4061.nupkg.sha512",
     "C:\\Users\\daoai\\.nuget\\packages\\emgu.cv.ui\\4.4.0.4061\\emgu.cv.ui.4.4.0.4061.nupkg.sha512",
     "C:\\Users\\daoai\\.nuget\\packages\\microsoft.netcore.platforms\\5.0.0\\microsoft.netcore.platforms.5.0.0.nupkg.sha512",
     "C:\\Users\\daoai\\.nuget\\packages\\microsoft.netcore.targets\\1.1.3\\microsoft.netcore.targets.1.1.3.nupkg.sha512",
