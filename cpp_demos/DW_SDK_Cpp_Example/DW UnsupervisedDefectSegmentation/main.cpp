@@ -1,110 +1,52 @@
+#include <daoai_unsupervised/daoai_unsupervised.h>
+#include <daoai_unsupervised/models/unsupervised_defect_segmentation.h>
 #include <iostream>
-#include <dlsdk/model.h>
-#include <dlsdk/prediction.h>
-#include <dlsdk/utils.h>
 #include <fstream>
-#include <cstring>
-#include <filesystem>
-#include <vector>
+
+using namespace DaoAI::Unsupervised;
 
 int main()
 {
-    std::cout << "Start DaoAI World \"OCR\" model example!" << std::endl;
+    try {
+        // Initialize Unsupervised library
+        initialize();
 
-    std::string rootpath = "../../../data/";
-    std::string image_path = rootpath + "ocr_img.png";   // Image file path
-    std::string model_path = rootpath + "ocr_model.dwm"; // Model file path
+        // Configure the model and data path
+        std::string root_directory = "../../../data/";  // Change to your own directory
 
-    // Convert relative paths to absolute paths for easier debugging and traceability
-    std::filesystem::path abs_image_path = std::filesystem::absolute(image_path);
-    std::filesystem::path abs_model_path = std::filesystem::absolute(model_path);
+        // Construct the model on the specified device
+        UnsupervisedDefectSegmentation model(DeviceType::GPU);
+        model.addComponentArchive(root_directory + "unsupervised_defect_segmentation_model.dwm");
+        std::cout << model.getBatchSize() << std::endl;
 
-    // Print the absolute paths of the image and model for verification
-    std::cout << "Image Path: " << abs_image_path << std::endl;
-    std::cout << "Model Path: " << abs_model_path << std::endl;
+        // Set batch size
+        model.setBatchSize(1);
 
-    try
-    {
-        /*
-         * Step 0: Initialize the SDK
-         */
-        std::cout << "Step 0: DW SDK initialize" << std::endl;
-        DaoAI::DeepLearning::initialize();
+        std::string img_path = root_directory + "unsupervised_defect_segmentation_img.bmp";  // Change to your own directory
+        Image img(img_path);
 
-        /*
-         * Step 1: Load the input image using DaoAI API
-         */
-        std::cout << "Step 1: Call the DaoAI API to load the image" << std::endl;
-        DaoAI::DeepLearning::Image image(image_path);
+        UnsupervisedDefectSegmentationResult result = model.inference(img);
 
-        /*
-         * Step 2: Load the OCR model using DaoAI API
-         * Note: The model used for this task is pre-trained on DaoAI World platform.
-         */
-        std::cout << "Step 2: Call the DaoAI API to load the OCR model" << std::endl;
-        DaoAI::DeepLearning::Vision::OCR model(model_path);
+        // Print the result
+        std::cout << "Anomaly score: " << result.confidence << std::endl;
+        std::cout << "JSON result: " << result.toAnnotationJSONString() << "\n\n";
 
-        /*
-         * Step 3: Use the model to make predictions on the input image
-         */
-        std::cout << "Step 3: Use OCR model to make predictions" << std::endl;
-        DaoAI::DeepLearning::Vision::OCRResult prediction = model.inference(image);
-
-        /*
-         * Step 4: Print Detailed Detection Results
-         */
-        std::cout << "\nStep 4: Print Detailed Detection Results" << std::endl;
-
-        // Print detected texts and their confidence scores
-        std::cout << "\nDetected Texts and Confidence Scores:" << std::endl;
-        for (size_t i = 0; i < prediction.texts.size(); ++i)
-        {
-            std::cout << "  Text: \"" << prediction.texts[i]
-                << "\", Confidence: " << prediction.confidences[i] << std::endl;
+        // Save the result to a file
+        std::string file_path = root_directory + "output.json";
+        std::ofstream output_file(file_path);
+        if (output_file.is_open()) {
+            output_file << result.toAnnotationJSONString();
+            output_file.close();
+            std::cout << "JSON result saved to: " << file_path << std::endl;
+        }
+        else {
+            std::cerr << "Failed to open the file: " << file_path << std::endl;
         }
 
-        // Print bounding boxes with their points
-        std::cout << "\nBounding Boxes for Detected Texts:" << std::endl;
-        for (size_t i = 0; i < prediction.boxes.size(); ++i)
-        {
-            const auto& box = prediction.boxes[i];
-            std::cout << "  Text Bounding Box " << i + 1 << ":" << std::endl;
-            for (size_t j = 0; j < box.points.size(); ++j)
-            {
-                std::cout << "    Point " << j + 1 << ": (" << box.points[j].x << ", " << box.points[j].y << ")" << std::endl;
-            }
-        }
-
-        std::cout << "\nDetection results printed successfully.\n" << std::endl;
-
-        /*
-         * Step 5: Output the results
-         */
-        std::cout << "Step 5: Result output" << std::endl;
-
-        // Visualize the prediction results on the input image
-        DaoAI::DeepLearning::Image resultImage = DaoAI::DeepLearning::Utils::visualize(image, prediction);
-         
-        // Write the prediction results to a JSON file for further inspection
-        std::filesystem::path abs_output_json_path = std::filesystem::absolute(rootpath + "output/testOCR_Result.json");
-        std::cout << "Writing prediction results to JSON file at: " << abs_output_json_path << std::endl;
-        std::ofstream fout(abs_output_json_path);
-        fout << prediction.toJSONString() << "\n";
-        fout.close();
-
-        // Save the result image with visualized segmentation to a file
-        std::filesystem::path abs_output_image_path = std::filesystem::absolute(rootpath + "output/testOCR_Result.bmp");
-        std::cout << "Writing result image at: " << abs_output_image_path << std::endl;
-        resultImage.save(rootpath + "output/testOCR_Result.bmp");
-
-        std::cout << "Process completed successfully" << std::endl;
-
-        system("pause");
         return 0;
     }
-    catch (const std::exception&)
-    {
-        std::cout << "Failed to process the image!" << std::endl;
+    catch (const std::exception& e) {
+        std::cout << "Caught an exception: " << e.what() << std::endl;
         return -1;
     }
 }

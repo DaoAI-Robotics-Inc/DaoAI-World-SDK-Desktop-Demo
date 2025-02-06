@@ -89,13 +89,11 @@ namespace OCR_demo
                     image.SetPixel(i, j, color);
                 }
             }
-            DaoAI.DeepLearningCLI.Application.initialize();
+            DaoAI.DeepLearningCLI.Application.initialize(false,0);
             String model_path = model_path1;
             Console.WriteLine("Loading model...");
             DaoAI.DeepLearningCLI.Vision.OCR model = new DaoAI.DeepLearningCLI.Vision.OCR(model_path, DaoAI.DeepLearningCLI.DeviceType.GPU, -1);
             Console.WriteLine("Model loaded. Running inference");
-            Dictionary<DaoAI.DeepLearningCLI.PostProcessType, object> post_params = new Dictionary<DaoAI.DeepLearningCLI.PostProcessType, object>();
-            post_params[DaoAI.DeepLearningCLI.PostProcessType.CONFIDENCE_THRESHOLD] = 0.5;
             Console.WriteLine(model.inference(img).toJSONString());
             DaoAI.DeepLearningCLI.Image result = DaoAI.DeepLearningCLI.Utils.visualize(img, model.inference(img));
             //result.save("C:/Users/杨志鹏/Desktop/allmodel/ocr/123.png");

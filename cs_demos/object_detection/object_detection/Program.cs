@@ -89,18 +89,17 @@ namespace object_detection
                 }
             }
             DaoAI.DeepLearningCLI.Image daoai_image = new DaoAI.DeepLearningCLI.Image(image_path);
-            DaoAI.DeepLearningCLI.Application.initialize();
+            DaoAI.DeepLearningCLI.Application.initialize(false,0);
             String model_path = model_path1;
             Console.WriteLine(model_path);
             Console.WriteLine("Loading model...");
             DaoAI.DeepLearningCLI.Vision.ObjectDetection model = new DaoAI.DeepLearningCLI.Vision.ObjectDetection(model_path, DaoAI.DeepLearningCLI.DeviceType.GPU, -1);
             Console.WriteLine(model.GetType());
             Console.WriteLine("Model loaded. Running inference");
-            Dictionary<DaoAI.DeepLearningCLI.PostProcessType, object> post_params = new Dictionary<DaoAI.DeepLearningCLI.PostProcessType, object>();
-            post_params[DaoAI.DeepLearningCLI.PostProcessType.CONFIDENCE_THRESHOLD] = 0.5;
-            DaoAI.DeepLearningCLI.Vision.ObjectDetectionResult result_pred = model.inference(daoai_image, post_params);
+            model.setConfidenceThreshold(0.5f);
+            DaoAI.DeepLearningCLI.Vision.ObjectDetectionResult result_pred = model.inference(daoai_image);
             Console.WriteLine(result_pred.toJSONString());
-            DaoAI.DeepLearningCLI.Image result = DaoAI.DeepLearningCLI.Utils.visualize(img, model.inference(img, post_params));
+            DaoAI.DeepLearningCLI.Image result = DaoAI.DeepLearningCLI.Utils.visualize(img, model.inference(img,));
             result.save(result_path);
             Console.WriteLine("Inference done");
         }

@@ -2,7 +2,7 @@
 
 ## **1. 安装最新版 DaoAI World SDK**
 请参考以下链接：  
-[DW_SDK Windows 安装包 — DaoAI World User Manual 2024.7 documentation](http://docs.welinkirt.com/daoai-world-user-manual/latest/develop/install.html#)
+[DW_SDK Windows 安装包 — DaoAI World User Manual 2024.8 documentation](http://docs.welinkirt.com/daoai-world-user-manual/latest/develop/install.html#)
 
 ---
 ## **C++ 项目参考**
@@ -116,7 +116,7 @@ Qt 会自动生成基础的 `CMakeLists.txt`，如下所示：
 
 ## **1. Install the Latest DaoAI World SDK**
 Please refer to the following link:  
-[DW_SDK Windows Installation Package — DaoAI World User Manual 2024.7 Documentation](http://docs.welinkirt.com/daoai-world-user-manual/latest/develop/install.html#)
+[DW_SDK Windows Installation Package — DaoAI World User Manual 2024.8 Documentation](http://docs.welinkirt.com/daoai-world-user-manual/latest/develop/install.html#)
 
 ---
 
