@@ -17,7 +17,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(DAOAI_SDK_PATH $ENV{DWSDK_PATH})
 
 # DaoAI world 头文件目录
-include_directories(${DAOAI_SDK_PATH}/include)
+include_directories(${DAOAI_SDK_PATH}/x64/Release/include)
 
 set(PROJECT_SOURCES
         main.cpp
@@ -43,7 +43,7 @@ endif()
 
 target_link_libraries(DW_SDK_Qt_Example PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 # DaoAI world lib库
-target_link_libraries(${PROJECT_NAME} PRIVATE "${DAOAI_SDK_PATH}/bin/daoai_dl_sdk.lib")
+target_link_libraries(${PROJECT_NAME} PRIVATE "${DAOAI_SDK_PATH}/x64/Release/lib/daoai_dl_sdk.lib")
 
 
 set_target_properties(DW_SDK_Qt_Example PROPERTIES
