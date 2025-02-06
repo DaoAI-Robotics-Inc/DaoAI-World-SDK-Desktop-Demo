@@ -85,11 +85,9 @@ namespace WinFormsApp1
             x = Width;// 存储窗体的初始宽度
             y = Height;// 存储窗体的初始高度
             setTag(this);// 为控件设置Tag属性
-            DaoAI.DeepLearningCLI.Application.initialize();// 初始化深度学习应用
+            DaoAI.DeepLearningCLI.Application.initialize(false, 0);// 初始化深度学习应用
             String model_path = @"../../../../../../Data/ocr_model.dwm";// 模型路径
             model = new DaoAI.DeepLearningCLI.Vision.OCR(model_path, DaoAI.DeepLearningCLI.DeviceType.GPU, -1);// 创建OCR模型实例
-            Dictionary<DaoAI.DeepLearningCLI.PostProcessType, object> post_params = new Dictionary<DaoAI.DeepLearningCLI.PostProcessType, object>();
-            post_params[DaoAI.DeepLearningCLI.PostProcessType.CONFIDENCE_THRESHOLD] = 0.5;
            
         }
 

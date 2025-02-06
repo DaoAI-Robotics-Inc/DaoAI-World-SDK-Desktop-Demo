@@ -1,0 +1,5 @@
+C:\Users\daoai\source\repos\auto_segment\auto_segment\obj\Release\net5.0-windows\auto_segment.csproj.AssemblyReference.cache
+C:\Users\daoai\source\repos\auto_segment\auto_segment\obj\Release\net5.0-windows\auto_segment.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\daoai\source\repos\auto_segment\auto_segment\obj\Release\net5.0-windows\auto_segment.AssemblyInfoInputs.cache
+C:\Users\daoai\source\repos\auto_segment\auto_segment\obj\Release\net5.0-windows\auto_segment.AssemblyInfo.cs
+C:\Users\daoai\source\repos\auto_segment\auto_segment\obj\Release\net5.0-windows\auto_segment.csproj.CoreCompileInputs.cache

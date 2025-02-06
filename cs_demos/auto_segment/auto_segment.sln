@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.33529.622
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "auto_segment", "auto_segment\auto_segment.csproj", "{1F795918-E86C-4BA5-AD10-1B659B68FE43}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1F795918-E86C-4BA5-AD10-1B659B68FE43}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F795918-E86C-4BA5-AD10-1B659B68FE43}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F795918-E86C-4BA5-AD10-1B659B68FE43}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F795918-E86C-4BA5-AD10-1B659B68FE43}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {919BE92B-1CC3-436F-84F7-56FC08A0BAB9}
+	EndGlobalSection
+EndGlobal

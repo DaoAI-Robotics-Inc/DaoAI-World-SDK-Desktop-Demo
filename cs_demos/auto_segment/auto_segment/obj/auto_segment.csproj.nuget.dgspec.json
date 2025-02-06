@@ -1,0 +1,83 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\daoai\\Documents\\DWSDK_Demo\\cs_demos\\auto_segment\\auto_segment\\auto_segment.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\daoai\\Documents\\DWSDK_Demo\\cs_demos\\auto_segment\\auto_segment\\auto_segment.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\daoai\\Documents\\DWSDK_Demo\\cs_demos\\auto_segment\\auto_segment\\auto_segment.csproj",
+        "projectName": "auto_segment",
+        "projectPath": "C:\\Users\\daoai\\Documents\\DWSDK_Demo\\cs_demos\\auto_segment\\auto_segment\\auto_segment.csproj",
+        "packagesPath": "C:\\Users\\daoai\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\daoai\\Documents\\DWSDK_Demo\\cs_demos\\auto_segment\\auto_segment\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\daoai\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net5.0-windows7.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net5.0-windows7.0": {
+            "targetAlias": "net5.0-windows",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net5.0-windows7.0": {
+          "targetAlias": "net5.0-windows",
+          "dependencies": {
+            "Emgu.CV": {
+              "target": "Package",
+              "version": "[4.4.0.4061, )"
+            },
+            "Emgu.CV.UI": {
+              "target": "Package",
+              "version": "[4.4.0.4061, )"
+            },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.3, )"
+            },
+            "System.Drawing.Common": {
+              "target": "Package",
+              "version": "[5.0.2, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            },
+            "Microsoft.WindowsDesktop.App.WindowsForms": {
+              "privateAssets": "none"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.416\\RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

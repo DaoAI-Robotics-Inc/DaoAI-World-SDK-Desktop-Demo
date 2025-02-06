@@ -90,15 +90,13 @@ namespace classification
                 }
             }
             DaoAI.DeepLearningCLI.Image daoai_image = new DaoAI.DeepLearningCLI.Image(image_path);
-            DaoAI.DeepLearningCLI.Application.initialize();
+            DaoAI.DeepLearningCLI.Application.initialize(false,0);
             String model_path = model_path1;
             Console.WriteLine(model_path);
             Console.WriteLine("Loading model...");
             DaoAI.DeepLearningCLI.Vision.Classification model = new DaoAI.DeepLearningCLI.Vision.Classification(model_path, DaoAI.DeepLearningCLI.DeviceType.GPU, -1);
             Console.WriteLine(model.GetType());
             Console.WriteLine("Model loaded. Running inference");
-            Dictionary<DaoAI.DeepLearningCLI.PostProcessType, object> post_params = new Dictionary<DaoAI.DeepLearningCLI.PostProcessType, object>();
-            post_params[DaoAI.DeepLearningCLI.PostProcessType.CONFIDENCE_THRESHOLD] = 0.5;
             DaoAI.DeepLearningCLI.Vision.ClassificationResult result_pred = model.inference(daoai_image);
             Console.WriteLine(result_pred.toJSONString());
             Console.WriteLine("Inference done");
