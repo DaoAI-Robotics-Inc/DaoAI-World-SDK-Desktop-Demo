@@ -13,7 +13,7 @@
 ## **先决条件**
 - **.NET SDK**：项目配置为使用 **.NET 5.0 SDK**，你也可以更改为其他 .NET 版本。
 
-- **SDK 依赖**：添加对 `dl_sdk_net.dll` 的引用，该文件位于 **dwsdk 安装路径**的 `bin` 文件夹中。
+- **SDK 依赖**：添加对 `dl_sdk_net.dll` 的引用，该文件位于 **dwsdk 安装路径**的 `SDK\Windows\x64\Release\lib` 文件夹中。
 
 ---
 
@@ -73,7 +73,7 @@ This repository contains example projects for using models with DaoAI's DWSDK. T
 ## **Prerequisites**
 - **.NET SDK**: the project is configured with **.NET 5.0 SDK**, you can also change to other .net versions.  
 
-- **SDK Dependency**: Add a reference to `dl_sdk_net.dll`, located in the `bin` folder of the **dwsdk installation path**.
+- **SDK Dependency**: Add a reference to `dl_sdk_net.dll`, located in the `SDK\Windows\x64\Release\lib` folder of the **dwsdk installation path**.
 
 ---
 
