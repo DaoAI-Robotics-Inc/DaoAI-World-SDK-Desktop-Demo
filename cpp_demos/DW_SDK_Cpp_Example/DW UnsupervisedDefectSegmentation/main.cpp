@@ -1,9 +1,9 @@
-#include <daoai_unsupervised/daoai_unsupervised.h>
-#include <daoai_unsupervised/models/unsupervised_defect_segmentation.h>
+#include <dlsdk/utils.h>
+#include <dlsdk/model.h>
 #include <iostream>
 #include <fstream>
 
-using namespace DaoAI::Unsupervised;
+using namespace DaoAI::DeepLearning;
 
 int main()
 {
@@ -15,7 +15,7 @@ int main()
         std::string root_directory = "../../../data/";  // Change to your own directory
 
         // Construct the model on the specified device
-        UnsupervisedDefectSegmentation model(DeviceType::GPU);
+        Vision::UnsupervisedDefectSegmentation model(DeviceType::GPU);
         model.addComponentArchive(root_directory + "unsupervised_defect_segmentation_model.dwm");
         std::cout << model.getBatchSize() << std::endl;
 
@@ -25,7 +25,7 @@ int main()
         std::string img_path = root_directory + "unsupervised_defect_segmentation_img.bmp";  // Change to your own directory
         Image img(img_path);
 
-        UnsupervisedDefectSegmentationResult result = model.inference(img);
+        Vision::UnsupervisedDefectSegmentationResult result = model.inference(img);
 
         // Print the result
         std::cout << "Anomaly score: " << result.confidence << std::endl;
