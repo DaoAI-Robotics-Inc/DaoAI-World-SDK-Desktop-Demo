@@ -197,7 +197,13 @@ namespace AutoSegmentationApp
         {
             try
             {
-                string json = JsonConvert.SerializeObject(result.toJSONString(), Formatting.Indented);
+                // Option 1: Write the raw JSON string directly.
+                string json = result.toJSONString();
+
+                // Option 2: If you need pretty-printed JSON, parse and reformat it:
+                // var parsedJson = Newtonsoft.Json.Linq.JToken.Parse(result.toJSONString());
+                // string json = parsedJson.ToString(Newtonsoft.Json.Formatting.Indented);
+
                 string directory = Path.GetDirectoryName(imagePath);
                 string outputPath = Path.Combine(directory, "result.json");
                 File.WriteAllText(outputPath, json);

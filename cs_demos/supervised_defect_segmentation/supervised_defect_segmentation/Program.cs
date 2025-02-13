@@ -15,8 +15,8 @@ namespace supervised_defect_segmentation
         static void Main(string[] args)
         {
             string currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            string fileName = "../../../../../../../Data/supervised_defect_segmentation_img.png";
-            string filemodel = "../../../../../../../Data/supervised_defect_segmentation_model.dwm";
+            string fileName = "../../../../../../../data/supervised_defect_segmentation_img.png";
+            string filemodel = "../../../../../../../data/supervised_defect_segmentation_model.dwm";
             string filePath_image = Path.Combine(currentDirectory, fileName);
             string filePath_model = Path.Combine(currentDirectory, filemodel);
             string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "resule_image.jpg");
@@ -99,7 +99,7 @@ namespace supervised_defect_segmentation
             DaoAI.DeepLearningCLI.Vision.SupervisedDefectSegmentationResult result_pred = model.inference(daoai_image);
             Console.WriteLine(result_pred.toJSONString());
             Console.WriteLine("jsons done");
-            DaoAI.DeepLearningCLI.Image result = DaoAI.DeepLearningCLI.Utils.visualize(img, model.inference(img));
+            DaoAI.DeepLearningCLI.Image result = DaoAI.DeepLearningCLI.Utils.visualize(img, result_pred);
             result.save(result_path);
             Console.WriteLine("Inference done");
         }

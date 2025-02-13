@@ -119,24 +119,35 @@ int main() {
     // Load the image
     std::string image_path = "../../../data/instance_segmentation_img.jpg"; // Change to your own path
     std::string model_path = "../../../data/auto_segment.dwm"; // Change to your own path
+
+    // Convert relative paths to absolute paths for easier debugging and traceability
+    std::filesystem::path abs_image_path = std::filesystem::absolute(image_path);
+    std::filesystem::path abs_model_path = std::filesystem::absolute(model_path);
+
+    // Print the absolute paths of the image and model
+    std::cout << "Image Path: " << abs_image_path << std::endl;
+    std::cout << "Model Path: " << abs_model_path << std::endl;
+
     cv::Mat image = cv::imread(image_path);
     if (image.empty()) {
         std::cerr << "Error: Could not load the image from " << image_path << std::endl;
         return -1;
     }
     original_image = &image;
-
-    // Load the model and generate embeddings
-    try {
+    try
+    {
+        // Load the model and generate embeddings
         model = new Vision::AutoSegmentation(model_path, DeviceType::GPU);
         Image daoai_image(image_path);
         static auto temp_embedding = model->generateImageEmbeddings(daoai_image);
         embedding = &temp_embedding;
     }
-    catch (const std::exception& e) {
-        std::cerr << "Error initializing the model: " << e.what() << std::endl;
-        return -1;
+    catch (const std::exception& e)
+    {
+        std::cout << e.what() << "\n";
+        return 0;
     }
+
 
     // Create a window to display the image
     cv::namedWindow(window_name, cv::WINDOW_AUTOSIZE);

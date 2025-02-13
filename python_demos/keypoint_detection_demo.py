@@ -82,19 +82,13 @@ def run_inference(model, daoai_image, confidence_threshold=0.95):
     """
     try:
         logger.info(f"Running inference with confidence threshold: {confidence_threshold}")
-        
-        prediction = model.inference( 
-            daoai_image, 
-            {dlsdk.PostProcessType.CONFIDENCE_THRESHOLD: confidence_threshold}
-        )
+        model.setConfidenceThreshold(confidence_threshold)
+        prediction = model.inference(daoai_image )
         
         # The first inference involves loading the model into memory, so the time for the first inference should be excluded
         # from the performance measurement.
         start_time = time.time()
-        prediction = model.inference( 
-            daoai_image, 
-            {dlsdk.PostProcessType.CONFIDENCE_THRESHOLD: confidence_threshold}
-        )
+        prediction = model.inference(daoai_image )
         execution_time = time.time() - start_time
         logger.info(f"Inference completed in {execution_time:.2f} seconds.\n")
         return prediction

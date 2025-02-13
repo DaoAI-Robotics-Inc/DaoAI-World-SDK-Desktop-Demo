@@ -27,7 +27,7 @@ def save_result_to_file(json_data, image_path):
     
     try:
         with open(output_path, "w") as file:
-            json.dump(json_data, file, indent=4)
+            file.write(json_data)
         print(f"Result saved to: {output_path}")
     except Exception as e:
         print(f"Error: Could not save result to {output_path}, {e}")
