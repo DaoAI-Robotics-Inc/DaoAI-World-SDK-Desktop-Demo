@@ -1,5 +1,6 @@
 #include <dlsdk/utils.h>
 #include <dlsdk/model.h>
+#include <dlsdk/common.h>
 #include <opencv2/opencv.hpp>
 #include <filesystem>
 #include <iostream>
@@ -363,7 +364,7 @@ int main() {
 
         // 6. Use the re-read data to build a training component
         Vision::UnsupervisedDefectSegmentation model(DeviceType::GPU);
-        model.setDetectionLevel(DetectionLevel::PIXEL);
+        model.setDetectionLevel(Vision::DetectionLevel::PIXEL);
         ComponentMemory component = model.createComponentMemory("screw", good_images, bad_images, masks, true);
         std::string compFile = (fs::path(folderPath) / "component_1.pth").string();
         component.save(compFile);
