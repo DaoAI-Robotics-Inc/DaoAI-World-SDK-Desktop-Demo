@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35825.156 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "inference_service", "inference_service\inference_service.csproj", "{6520DC1C-7D4F-49EC-B94E-4B6808586276}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6520DC1C-7D4F-49EC-B94E-4B6808586276}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6520DC1C-7D4F-49EC-B94E-4B6808586276}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6520DC1C-7D4F-49EC-B94E-4B6808586276}.Debug|x64.ActiveCfg = Debug|x64
+		{6520DC1C-7D4F-49EC-B94E-4B6808586276}.Debug|x64.Build.0 = Debug|x64
+		{6520DC1C-7D4F-49EC-B94E-4B6808586276}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6520DC1C-7D4F-49EC-B94E-4B6808586276}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6520DC1C-7D4F-49EC-B94E-4B6808586276}.Release|x64.ActiveCfg = Release|x64
+		{6520DC1C-7D4F-49EC-B94E-4B6808586276}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DDABDD93-09C5-4FCB-ABAE-3A41DDB72DCF}
+	EndGlobalSection
+EndGlobal

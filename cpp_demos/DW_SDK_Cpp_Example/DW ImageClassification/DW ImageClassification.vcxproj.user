@@ -4,4 +4,10 @@
     <LocalDebuggerEnvironment>PATH=$(DWSDK_PATH)\x64\Release\lib;$(DWSDK_PATH)\x64\Release\3rdparty;</LocalDebuggerEnvironment>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LocalDebuggerEnvironment>PATH=%PATH%;%DWSDK_PATH%\x64\Release\3rdparty
+;%DWSDK_PATH%\x64\Release\lib;
+$(LocalDebuggerEnvironment)</LocalDebuggerEnvironment>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
 </Project>

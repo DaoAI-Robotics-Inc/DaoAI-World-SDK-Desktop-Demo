@@ -37,6 +37,8 @@ cs_demos/supervised_defect_segmentation/supervised_defect_segmentation/bin
 cs_demos/supervised_defect_segmentation/supervised_defect_segmentation/obj
 cs_demos/unsupervised_defect_segmentation/unsupervised_defect_segmentation/bin
 cs_demos/unsupervised_defect_segmentation/unsupervised_defect_segmentation/obj
+cs_demos/inference_service/inference_service/bin
+cs_demos/inference_service/inference_service/obj
 cs_demos/WinFormsApp1/bin
 cs_demos/WinFormsApp1/obj
 **/.vs/
