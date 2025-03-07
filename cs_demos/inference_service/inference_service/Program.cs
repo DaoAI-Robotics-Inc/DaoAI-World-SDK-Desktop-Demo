@@ -47,7 +47,7 @@ namespace Inference_Service_Demo
             // ===============================
             InstanceSegmentationResult result = model.inference(base64Image);
             Console.WriteLine("Inference done.");
-            Console.WriteLine("Detected objects: " + result.class_labels.Length);
+            Console.WriteLine("Detected objects: " + result.num_detections);
             for (int i = 0; i < result.class_labels.Length; i++)
             {
                 Console.WriteLine("Object " + (i + 1));
@@ -67,7 +67,7 @@ namespace Inference_Service_Demo
                 {
                     using (Graphics g = Graphics.FromImage(image))
                     {
-                        for (int i = 0; i < result.class_labels.Length; i++)
+                        for (int i = 0; i < result.num_detections; i++)
                         {
                             // 获取边界框坐标
                             int x1 = (int)result.boxes[i].x1();

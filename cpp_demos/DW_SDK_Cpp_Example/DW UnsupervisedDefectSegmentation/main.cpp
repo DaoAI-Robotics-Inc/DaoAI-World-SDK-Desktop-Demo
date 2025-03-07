@@ -380,6 +380,7 @@ int main() {
         return 0;
     }
     catch (const std::exception& e) {
+
         std::cerr << "Caught an exception: " << e.what() << std::endl;
         return -1;
     }
