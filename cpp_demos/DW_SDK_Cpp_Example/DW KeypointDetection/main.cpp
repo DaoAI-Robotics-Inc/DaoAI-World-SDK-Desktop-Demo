@@ -41,7 +41,7 @@ int main()
          * from the DaoAI World platform.
          */
         std::cout << "Step 2: Call the DaoAI API to load the keypoint detection model" << std::endl;
-        DaoAI::DeepLearning::Vision::KeypointDetection model(model_path);
+        DaoAI::DeepLearning::Vision::KeypointDetection model(model_path, DaoAI::DeepLearning::DeviceType::GPU);
 
         /*
          * Step 3: Use the loaded model to make predictions

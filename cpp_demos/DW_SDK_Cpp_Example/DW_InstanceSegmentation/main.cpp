@@ -42,7 +42,7 @@ int main()
          * p.s. The model is pre-trained on DaoAI World platform.
          */
         std::cout << "Step 2: Call the DaoAI API to load the instance segmentation model" << std::endl;
-        DaoAI::DeepLearning::Vision::InstanceSegmentation model(model_path);
+        DaoAI::DeepLearning::Vision::InstanceSegmentation model(model_path, DaoAI::DeepLearning::DeviceType::GPU);
 
         /*
          * Step 3: Use the deep learning model to make predictions on the image

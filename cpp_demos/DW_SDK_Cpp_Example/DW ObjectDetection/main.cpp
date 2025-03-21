@@ -5,6 +5,8 @@
 #include <fstream>
 #include <cstring>
 #include <filesystem>
+#include <chrono>
+
 
 int main()
 {
@@ -13,7 +15,8 @@ int main()
     // Define the root path and file paths for the image and model
     std::string rootpath = "../../../data/";
     std::string image_path = rootpath + "object_detection_img.png";   // Image file path
-    std::string model_path = rootpath + "object_detection_model.dwm"; // Model file path
+    std::string image_path2 = rootpath + "obj1.png";   // Image file path
+    std::string model_path = rootpath + "obj1.dwm"; // Model file path
 
     // Convert relative paths to absolute paths for easier debugging and traceability
     std::filesystem::path abs_image_path = std::filesystem::absolute(image_path);
@@ -44,13 +47,27 @@ int main()
          * from the DaoAI World platform before use.
          */
         std::cout << "Step 2: Call the DaoAI API to load the object detection model" << std::endl;
-        DaoAI::DeepLearning::Vision::ObjectDetection model(model_path);
+        DaoAI::DeepLearning::Vision::ObjectDetection model(abs_model_path,DaoAI::DeepLearning::DeviceType::GPU);
 
         /*
          * Step 3: Use the loaded model to make predictions
          */
         std::cout << "Step 3: Use the deep learning model to make predictions" << std::endl;
-        DaoAI::DeepLearning::Vision::ObjectDetectionResult prediction = model.inference(image);
+        DaoAI::DeepLearning::Vision::ObjectDetectionResult prediction1 = model.inference(image);
+
+        DaoAI::DeepLearning::Image image2(image_path2);
+
+        // 开始计时
+        auto start = std::chrono::high_resolution_clock::now();
+
+        // 执行推理
+        DaoAI::DeepLearning::Vision::ObjectDetectionResult prediction = model.inference(image2);
+
+        // 结束计时
+        auto end = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+
+        std::cout << "Inference took " << duration << " ms" << std::endl;
 
         /*
          * Step 4: Print detailed detection results
@@ -102,9 +119,9 @@ int main()
         system("pause");
         return 0;
     }
-    catch (const std::exception&)
+    catch (const std::exception& e)
     {
-        std::cout << "Failed to complete the process!" << std::endl;
+        std::cout << "Failed to complete the process! Error: " << e.what() << std::endl;
         return -1;
     }
 }

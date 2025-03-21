@@ -89,7 +89,7 @@ namespace positioning
             //    }
             //}
             DaoAI.DeepLearningCLI.Image daoai_image = new DaoAI.DeepLearningCLI.Image(image_path);
-            DaoAI.DeepLearningCLI.Application.initialize(false,0);
+            DaoAI.DeepLearningCLI.Application.initialize();
             String model_path = model_path1;
             Console.WriteLine(model_path);
             Console.WriteLine("Loading model...");

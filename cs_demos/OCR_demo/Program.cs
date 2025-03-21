@@ -89,7 +89,7 @@ namespace OCR_demo
                     image.SetPixel(i, j, color);
                 }
             }
-            DaoAI.DeepLearningCLI.Application.initialize(false,0);
+            DaoAI.DeepLearningCLI.Application.initialize();
             String model_path = model_path1;
             Console.WriteLine("Loading model...");
             DaoAI.DeepLearningCLI.Vision.OCR model = new DaoAI.DeepLearningCLI.Vision.OCR(model_path, DaoAI.DeepLearningCLI.DeviceType.GPU, -1);

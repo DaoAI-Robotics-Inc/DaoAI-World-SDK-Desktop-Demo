@@ -39,8 +39,13 @@ cs_demos/unsupervised_defect_segmentation/unsupervised_defect_segmentation/bin
 cs_demos/unsupervised_defect_segmentation/unsupervised_defect_segmentation/obj
 cs_demos/inference_service/inference_service/bin
 cs_demos/inference_service/inference_service/obj
+cs_demos/work_with_opencv_demo/work_with_opencv_demo/bin
+cs_demos/work_with_opencv_demo/work_with_opencv_demo/obj
+cs_demos/halcon_sdk_demo/bin
+cs_demos/halcon_sdk_demo/obj
 cs_demos/WinFormsApp1/bin
 cs_demos/WinFormsApp1/obj
+cs_demos/WinFormsApp1/source
 **/.vs/
 **/x64/
 cpp_demos/DW_SDK_Cpp_Example/DW AutoSegmentation/x64

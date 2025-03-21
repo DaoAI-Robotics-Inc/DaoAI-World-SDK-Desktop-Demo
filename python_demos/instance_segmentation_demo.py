@@ -204,7 +204,7 @@ def main():
 
     # Paths (update these to your environment)
     model_path = r"data\instance_segmentation_model.dwm"
-    image_path =  r"data\instance_segmentation_img.png"
+    image_path =  r"data\instance_segmentation_img.jpg"
 
     # Step 1: Initialize SDK
     initialize_sdk()
