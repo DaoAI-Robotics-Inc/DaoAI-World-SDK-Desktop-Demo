@@ -4,10 +4,6 @@ import cv2
 import numpy as np
 import shutil
 from pathlib import Path
-
-os.add_dll_directory(r"C:\Program Files\DaoAI World SDK\SDK\Windows\x64\Release\lib")
-os.add_dll_directory(r"C:\Program Files\DaoAI World SDK\SDK\Windows\x64\Release\3rdparty")
-
 import dlsdk.dlsdk as dlsdk
 
 # 固定显示窗口大小
