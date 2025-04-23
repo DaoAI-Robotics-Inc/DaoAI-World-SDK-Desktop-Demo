@@ -369,28 +369,33 @@ namespace UnsupervisedDefectSegmentationDemo
                 Console.WriteLine("create model instance");
 
                 var unsupervisedModel = new DaoAI.DeepLearningCLI.Vision.UnsupervisedDefectSegmentation(DeviceType.GPU);
-                Console.WriteLine("step 1");
-                unsupervisedModel.setDetectionLevel(DaoAI.DeepLearningCLI.DetectionLevel.PIXEL);
-                Console.WriteLine("step 2");
+                unsupervisedModel.setDetectionLevel(DaoAI.DeepLearningCLI.DetectionLevel.PIXEL_ACCURATE);
                 var component = unsupervisedModel.createComponentMemory("screw", goodImages.ToArray(), badImages.ToArray(), masksList.ToArray(), true);
-                Console.WriteLine("step 3");
                 string compFile = Path.Combine(folderPath, "component_1.pth");
-                Console.WriteLine("step 4");
                 component.save(compFile);
-                Console.WriteLine("step 5");
                 unsupervisedModel.setBatchSize(1);
                 Console.WriteLine("训练组件已保存到: " + compFile);
 
                 // 8. （可选）对一张坏图进行推理，输出缺陷得分及 JSON 格式结果
                 if (badImages.Count > 0)
                 {
-                    var result = unsupervisedModel.inference(badImages[0]);
-                    Console.WriteLine("缺陷得分: " + result.confidence);
-                    Console.WriteLine("step 7");
+                    for (int i = 0; i < badImages.Count; ++i)
+                    {
+                        var img = badImages[i];
+                        var result = unsupervisedModel.inference(img);
 
-                    Console.WriteLine("JSON 结果: " + result.toJSONString());
-                    Console.WriteLine("step 8");
+                        Console.WriteLine($"缺陷得分 [{i}]: {result.ai_deviation_score}");
+                        Console.WriteLine($"JSON 结果 [{i}]: {result.toJSONString()}");
 
+                        string fileName = $"test_unsupervised_result_{i}.png";
+                        string resultPath = Path.Combine(folderPath, "out", fileName);
+
+                        // 可视化并保存
+                        DaoAI.DeepLearningCLI.Image visualization = DaoAI.DeepLearningCLI.Utils.visualize(img, result);
+                        visualization.save(resultPath);
+
+                        Console.WriteLine($"Writing result image to: {Path.GetFullPath(resultPath)}");
+                    }
                 }
             }
             catch (Exception ex)

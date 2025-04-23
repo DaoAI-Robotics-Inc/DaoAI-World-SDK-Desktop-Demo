@@ -1,10 +1,13 @@
 import os
 import sys
 import cv2
-import dlsdk.dlsdk
 import numpy as np
 import shutil
 from pathlib import Path
+
+os.add_dll_directory(r"C:\Program Files\DaoAI World SDK\SDK\Windows\x64\Release\lib")
+os.add_dll_directory(r"C:\Program Files\DaoAI World SDK\SDK\Windows\x64\Release\3rdparty")
+
 import dlsdk.dlsdk as dlsdk
 
 # 固定显示窗口大小
@@ -297,7 +300,7 @@ def main():
     # 7. 使用重新读取的数据构建训练组件
     print("creating model instance")
     model_instance = dlsdk.UnsupervisedDefectSegmentation(device=dlsdk.DeviceType.GPU)
-    model_instance.setDetectionLevel(dlsdk.DetectionLevel.PIXEL)
+    model_instance.setDetectionLevel(dlsdk.DetectionLevel.PIXEL_ACCURATE)
     print("running inference")
     component = model_instance.createComponentMemory("screw", good_images, bad_images, masks_list, True)
     compFile = os.path.join(folderPath, "component_1.pth")
@@ -305,11 +308,24 @@ def main():
     model_instance.setBatchSize(1)
     print("Component memory saved to", compFile)
 
-    # 8. (可选) 对一张坏图进行推理，查看结果
+    # 8. (可选) 对所有坏图进行推理并保存结果
     if bad_images:
-        result = model_instance.inference(bad_images[0])
-        print("Anomaly score:", result.confidence)
-        print("JSON result:", result.toAnnotationJSONString())
+        for idx, img in enumerate(bad_images):
+            # 推理
+            result = model_instance.inference(img)
+            print(f"缺陷得分 [{idx}]:", result.ai_deviation_score)
+            print(f"JSON 结果 [{idx}]:", result.toAnnotationJSONString())
 
+            # 可视化
+            vis = dlsdk.visualize(img, result)
+
+            # 构造带索引的输出路径
+            output_filename = f"test_unsupervised_result_{idx}.png"
+            output_path = os.path.join(folderPath, "out", output_filename)
+
+            # 保存并打印绝对路径
+            vis.save(output_path)
+            print(f"Saved visualization to: {os.path.abspath(output_path)}")
+            
 if __name__ == '__main__':
     main()

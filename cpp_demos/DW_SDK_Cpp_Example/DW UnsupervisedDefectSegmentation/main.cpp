@@ -364,19 +364,47 @@ int main() {
 
         // 6. Use the re-read data to build a training component
         Vision::UnsupervisedDefectSegmentation model(DeviceType::GPU);
-        model.setDetectionLevel(Vision::DetectionLevel::PIXEL);
+        model.setDetectionLevel(Vision::DetectionLevel::PIXEL_ACCURATE);
+        // Only require 1 Good image to train, Bad image and Mask can leave as {}
         ComponentMemory component = model.createComponentMemory("screw", good_images, bad_images, masks, true);
         std::string compFile = (fs::path(folderPath) / "component_1.pth").string();
         component.save(compFile);
         model.setBatchSize(1);
         std::cout << "Component memory saved to " << compFile << std::endl;
-
+        
         // 7. (Optional) Perform inference on a BAD image to view the results
         if (!bad_images.empty()) {
-            Vision::UnsupervisedDefectSegmentationResult result = model.inference(bad_images[0]);
-            std::cout << "Anomaly score: " << result.confidence << std::endl;
-            std::cout << "JSON result: " << result.toAnnotationJSONString() << std::endl;
+            for (size_t idx = 0; idx < bad_images.size(); ++idx) {
+                // Run inference on each bad image
+                const auto& img = bad_images[idx];
+                Vision::UnsupervisedDefectSegmentationResult result = model.inference(img);
+                std::cout << "Anomaly score [" << idx << "]: "
+                    << result.ai_deviation_score << std::endl;
+                std::cout << "JSON result [" << idx << "]: "
+                    << result.toAnnotationJSONString() << std::endl;
+
+                // Visualize and save each result with a unique filename
+                DaoAI::DeepLearning::Image visImg =
+                    DaoAI::DeepLearning::Utils::visualize(img, result);
+
+                // Build output filename
+                std::ostringstream oss;
+                oss << "test_unsupervised_result_" << idx << ".png";
+                std::string filename = oss.str();
+
+                // Compose full paths
+                std::string image_output_path =
+                    (fs::path(folderPath) / "out" / filename).string();
+                std::string image_abs_path =
+                    std::filesystem::absolute(image_output_path).string();
+
+                std::cout << "Writing result image to: "
+                    << image_abs_path << std::endl;
+                visImg.save(image_output_path);
+            }
         }
+       
+
         return 0;
     }
     catch (const std::exception& e) {
