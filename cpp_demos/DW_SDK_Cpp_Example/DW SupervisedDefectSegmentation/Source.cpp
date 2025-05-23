@@ -1,7 +1,7 @@
 #include <iostream>
-#include <dlsdk/model.h>
-#include <dlsdk/prediction.h>
-#include <dlsdk/utils.h>
+#include <dwsdk/model.h>
+#include <dwsdk/prediction.h>
+#include <dwsdk/utils.h>
 #include <fstream>
 #include <cstring>
 #include <filesystem>
@@ -11,9 +11,9 @@ int main()
     std::cout << "Start DaoAI World \"Supervised Defect Segmentation\" model example!" << std::endl;
 
     // Define the root path and file paths for the image and model
-    std::string rootpath = "../../../data/";
-    std::string image_path = rootpath + "supervised_defect_segmentation_img.png";   // Image file path
-    std::string model_path = rootpath + "supervised_defect_segmentation_model.dwm"; // Model file path
+    std::string rootpath = "C:/Users/daoai/Downloads/hanlang/";
+    std::string image_path = rootpath + "1_4.png";   // Image file path
+    std::string model_path = rootpath + "hanlang.dwm"; // Model file path
 
     // Convert relative paths to absolute paths for easier debugging and traceability
     std::filesystem::path abs_image_path = std::filesystem::absolute(image_path);
@@ -45,13 +45,11 @@ int main()
          */
         std::cout << "Step 2: Call the DaoAI API to load the SupervisedDefectSegmentation model" << std::endl;
         DaoAI::DeepLearning::Vision::SupervisedDefectSegmentation model(model_path);
-
         /*
          * Step 3: Use the loaded model to make predictions
          */
         std::cout << "Step 3: Use the deep learning model to make predictions" << std::endl;
         DaoAI::DeepLearning::Vision::SupervisedDefectSegmentationResult prediction = model.inference(image);
-
         /*
          * Step 4: Print detailed detection results
          */
@@ -108,9 +106,10 @@ int main()
         system("pause");
         return 0;
     }
-    catch (const std::exception&)
+    catch (const std::runtime_error& e)
     {
         std::cout << "Failed to complete the process!" << std::endl;
+        std::cout << e.what() << "\n";
         return -1;
     }
 }

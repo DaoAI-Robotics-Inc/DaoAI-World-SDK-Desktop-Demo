@@ -1,9 +1,9 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <dlsdk/model.h>
-#include <dlsdk/prediction.h>
-#include <dlsdk/utils.h>
+#include <dwsdk/model.h>
+#include <dwsdk/prediction.h>
+#include <dwsdk/utils.h>
 #include <string>
 #include <memory>
 #include <QMainWindow>

@@ -16,8 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="dl_sdk_net">
-      <HintPath>C:\Program Files\DaoAI World SDK\SDK\Windows\x64\Release\lib\dl_sdk_net.dll</HintPath>
+    <Reference Include="dwsdk_net">
+      <HintPath>..\..\..\..\..\..\Program Files\DaoAI World SDK\SDK\Windows\x64\Release\lib\dwsdk_net.dll</HintPath>
     </Reference>
     <Reference Include="halcondotnet">
       <HintPath>C:\Users\jtcnn\AppData\Local\Programs\MVTec\HALCON-23.11-Progress\bin\dotnet35\halcondotnet.dll</HintPath>

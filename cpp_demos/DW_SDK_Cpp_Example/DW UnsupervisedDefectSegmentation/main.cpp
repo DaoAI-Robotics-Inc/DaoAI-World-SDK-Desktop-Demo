@@ -1,6 +1,6 @@
-#include <dlsdk/utils.h>
-#include <dlsdk/model.h>
-#include <dlsdk/common.h>
+#include <dwsdk/utils.h>
+#include <dwsdk/model.h>
+#include <dwsdk/common.h>
 #include <opencv2/opencv.hpp>
 #include <filesystem>
 #include <iostream>
@@ -364,13 +364,15 @@ int main() {
 
         // 6. Use the re-read data to build a training component
         Vision::UnsupervisedDefectSegmentation model(DeviceType::GPU);
-        model.setDetectionLevel(Vision::DetectionLevel::PIXEL_ACCURATE);
+        model.setDetectionLevel(Vision::DetectionLevel::IMAGE);
         // Only require 1 Good image to train, Bad image and Mask can leave as {}
-        ComponentMemory component = model.createComponentMemory("screw", good_images, bad_images, masks, true);
+        ComponentMemory component = model.createComponentMemory("screw", good_images, {}, {}, true);
         std::string compFile = (fs::path(folderPath) / "component_1.pth").string();
         component.save(compFile);
         model.setBatchSize(1);
         std::cout << "Component memory saved to " << compFile << std::endl;
+
+        std::cout << "Image Threshold of the model is: " << component.getImageThreshold() << std::endl;
         
         // 7. (Optional) Perform inference on a BAD image to view the results
         if (!bad_images.empty()) {
@@ -380,9 +382,10 @@ int main() {
                 Vision::UnsupervisedDefectSegmentationResult result = model.inference(img);
                 std::cout << "Anomaly score [" << idx << "]: "
                     << result.ai_deviation_score << std::endl;
-                std::cout << "JSON result [" << idx << "]: "
-                    << result.toAnnotationJSONString() << std::endl;
-
+                result.mask.toImage().save("C:/Users/daoai/test_vision/duanzi_1_test/mask.png");
+                img.save("C:/Users/daoai/test_vision/duanzi_1_test/test.png");
+                //std::cout << "JSON result [" << idx << "]: "
+                //    << result.toAnnotationJSONString() << std::endl;
                 // Visualize and save each result with a unique filename
                 DaoAI::DeepLearning::Image visImg =
                     DaoAI::DeepLearning::Utils::visualize(img, result);
@@ -391,7 +394,7 @@ int main() {
                 std::ostringstream oss;
                 oss << "test_unsupervised_result_" << idx << ".png";
                 std::string filename = oss.str();
-
+                
                 // Compose full paths
                 std::string image_output_path =
                     (fs::path(folderPath) / "out" / filename).string();

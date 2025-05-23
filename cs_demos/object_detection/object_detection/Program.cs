@@ -99,7 +99,7 @@ namespace object_detection
             model.setConfidenceThreshold(0.5f);
             DaoAI.DeepLearningCLI.Vision.ObjectDetectionResult result_pred = model.inference(daoai_image);
             Console.WriteLine(result_pred.toJSONString());
-            DaoAI.DeepLearningCLI.Image result = DaoAI.DeepLearningCLI.Utils.visualize(img, model.inference(img,));
+            DaoAI.DeepLearningCLI.Image result = DaoAI.DeepLearningCLI.Utils.visualize(img, model.inference(img));
             result.save(result_path);
             Console.WriteLine("Inference done");
         }

@@ -1,11 +1,11 @@
 import cv2
 import json
-import dlsdk.dlsdk as dlsdk
+import dwsdk.dwsdk as dwsdk
 import numpy as np
 import os
 
 # Initialize Deep Learning SDK
-dlsdk.initialize()
+dwsdk.initialize()
 
 # Global variables
 clicked_points = []
@@ -52,15 +52,15 @@ def on_mouse(event, x, y, flags, param):
         end_point = (x, y)
 
         if start_point == end_point:
-            clicked_points.append(dlsdk.Point(x, y, "1"))  # Positive point
+            clicked_points.append(dwsdk.Point(x, y, "1"))  # Positive point
         else:
-            drawn_boxes.append(dlsdk.Box(dlsdk.Point(*start_point), dlsdk.Point(*end_point)))
+            drawn_boxes.append(dwsdk.Box(dwsdk.Point(*start_point), dwsdk.Point(*end_point)))
             cv2.rectangle(display_image, start_point, end_point, (0, 255, 0), 2)
 
         run_inference()
 
     elif event == cv2.EVENT_RBUTTONDOWN:
-        clicked_points.append(dlsdk.Point(x, y, "0"))  # Negative point
+        clicked_points.append(dwsdk.Point(x, y, "0"))  # Negative point
         run_inference()
 
 # Perform inference and update display
@@ -102,8 +102,8 @@ def main():
 
     # Load model and generate embeddings
     try:
-        model = dlsdk.AutoSegmentation(model_path, dlsdk.DeviceType.GPU)
-        daoai_image = dlsdk.Image(image_path)
+        model = dwsdk.AutoSegmentation(model_path, dwsdk.DeviceType.GPU)
+        daoai_image = dwsdk.Image(image_path)
         embedding = model.generateImageEmbeddings(daoai_image)
     except Exception as e:
         print(f"Error initializing the model: {e}")

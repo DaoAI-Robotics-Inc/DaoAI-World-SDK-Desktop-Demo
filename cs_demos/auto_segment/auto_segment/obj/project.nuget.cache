@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "JRNJnJf4wmeRX/yHUDhDiKd1/EmqIF1f/3FHJwGC9cjUudjLcIdk3ZA5PT9iB204gn6yMx3wK/Zqr+8vpIpOQA==",
+  "dgSpecHash": "U2JrFg6cpfM=",
   "success": true,
   "projectFilePath": "C:\\Users\\daoai\\Documents\\DWSDK_Demo\\cs_demos\\auto_segment\\auto_segment\\auto_segment.csproj",
   "expectedPackageFiles": [
@@ -35,10 +35,20 @@
       "code": "NU1603",
       "level": "Warning",
       "warningLevel": 1,
-      "message": "Emgu.CV.UI 4.4.0.4061 depends on Emgu.CV.Bitmap (>= 4.4.0 && < 4.4.1) but Emgu.CV.Bitmap 4.4.0 was not found. An approximate best match of Emgu.CV.Bitmap 4.4.0.4061 was resolved.",
+      "message": "Emgu.CV.UI 4.4.0.4061 depends on Emgu.CV.Bitmap (>= 4.4.0 && < 4.4.1) but Emgu.CV.Bitmap 4.4.0 was not found. Emgu.CV.Bitmap 4.4.0.4061 was resolved instead.",
       "libraryId": "Emgu.CV.Bitmap",
       "targetGraphs": [
-        "net5.0-windows7.0"
+        "net8.0-windows7.0"
+      ]
+    },
+    {
+      "code": "NU1904",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'System.Drawing.Common' 5.0.2 has a known critical severity vulnerability, https://github.com/advisories/GHSA-rxg9-xrhp-64gj",
+      "libraryId": "System.Drawing.Common",
+      "targetGraphs": [
+        "net8.0-windows7.0"
       ]
     }
   ]

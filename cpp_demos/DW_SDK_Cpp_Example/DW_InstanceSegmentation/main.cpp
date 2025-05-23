@@ -1,7 +1,7 @@
 #include <iostream>
-#include <dlsdk/model.h>
-#include <dlsdk/prediction.h>
-#include <dlsdk/utils.h>
+#include <dwsdk/model.h>
+#include <dwsdk/prediction.h>
+#include <dwsdk/utils.h>
 #include <fstream>
 #include <cstring>
 #include <filesystem>

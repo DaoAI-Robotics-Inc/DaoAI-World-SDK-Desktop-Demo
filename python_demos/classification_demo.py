@@ -4,7 +4,7 @@ import cv2
 import time
 import json
 import logging
-import dlsdk.dlsdk as dlsdk
+import dwsdk.dwsdk as dwsdk
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -19,26 +19,26 @@ def initialize_sdk():
     """
     try:
         logger.info("Initializing the SDK...")
-        dlsdk.initialize()
+        dwsdk.initialize()
         logger.info("SDK initialized successfully.\n")
     except Exception as e:
         logger.error(f"Error during SDK initialization: {str(e)}")
         raise
 
-def load_model(model_path, device=dlsdk.DeviceType.CPU):
+def load_model(model_path, device=dwsdk.DeviceType.CPU):
     """
     Load the Classification model.
     
     Args:
         model_path (str): Path to the model file.
-        device (dlsdk.DeviceType): Device to run the model on (default: GPU).
+        device (dwsdk.DeviceType): Device to run the model on (default: GPU).
     
     Returns:
         model: Loaded model object.
     """
     try:
         logger.info(f"Loading model from: {model_path}")
-        model = dlsdk.ClassificationModel(model_path, device=device)
+        model = dwsdk.ClassificationModel(model_path, device=device)
         logger.info("Model loaded successfully.\n")
         return model
     except Exception as e:
@@ -60,8 +60,8 @@ def load_image(image_path):
         img = cv2.imread(image_path)
         if img is None:
             raise ValueError(f"Unable to load image at {image_path}")
-        daoai_image = dlsdk.Image(image_path)
-        assert isinstance(daoai_image, dlsdk.Image)
+        daoai_image = dwsdk.Image(image_path)
+        assert isinstance(daoai_image, dwsdk.Image)
         logger.info("Image loaded successfully.\n")
         return daoai_image
     except Exception as e:

@@ -6,7 +6,7 @@ import logging
 from PyQt5.QtWidgets import (QApplication, QLabel, QMainWindow, QVBoxLayout, QHBoxLayout, QPushButton, QFileDialog, QWidget, QScrollArea, QSplitter, QTextEdit)
 from PyQt5.QtGui import QPixmap, QImage
 from PyQt5.QtCore import Qt, QPoint
-import dlsdk.dlsdk as dlsdk
+import dwsdk.dwsdk as dwsdk
 
 # Custom handler to log to QTextEdit
 class QTextEditHandler(logging.Handler):
@@ -25,16 +25,16 @@ logger.setLevel(logging.INFO)
 def initialize_sdk():
     try:
         logger.info("Initializing the SDK...")
-        dlsdk.initialize()
+        dwsdk.initialize()
         logger.info("SDK initialized successfully.\n")
     except Exception as e:
         logger.error(f"Error during SDK initialization: {str(e)}")
         raise
 
-def load_model(model_path, device=dlsdk.DeviceType.CPU):
+def load_model(model_path, device=dwsdk.DeviceType.CPU):
     try:
         logger.info(f"Loading model from: {model_path}")
-        model = dlsdk.KeypointDetection(model_path, device=device)
+        model = dwsdk.KeypointDetection(model_path, device=device)
         logger.info("Model loaded successfully.\n")
         return model
     except Exception as e:
@@ -46,7 +46,7 @@ def run_inference(model, daoai_image, confidence_threshold=0.95):
         logger.info(f"Running inference with confidence threshold: {confidence_threshold}")
         prediction = model.inference(
             daoai_image,
-            {dlsdk.PostProcessType.CONFIDENCE_THRESHOLD: confidence_threshold}
+            {dwsdk.PostProcessType.CONFIDENCE_THRESHOLD: confidence_threshold}
         )
         logger.info("Inference completed successfully.\n")
         return prediction
@@ -61,7 +61,7 @@ def visualize_and_save_result(daoai_image, prediction, output_path="python_demos
         timestamp = time.strftime("%Y%m%d_%H%M%S")
         timestamp = re.sub(r'[:]', '-', timestamp)  # Replace ':' to avoid invalid filename
         output_file = os.path.join(output_path, f"python_gui_example_result_{timestamp}.png")
-        result = dlsdk.visualize(daoai_image, prediction)
+        result = dwsdk.visualize(daoai_image, prediction)
         result.save(output_file)
         logger.info(f"Visualization saved to: {output_file}\n")
         return output_file
@@ -214,7 +214,7 @@ class KeypointDetectionApp(QMainWindow):
             logger.error("No image loaded.")
             return
 
-        daoai_image = dlsdk.Image(self.image_path)
+        daoai_image = dwsdk.Image(self.image_path)
         prediction = run_inference(self.model, daoai_image)
 
         if prediction:

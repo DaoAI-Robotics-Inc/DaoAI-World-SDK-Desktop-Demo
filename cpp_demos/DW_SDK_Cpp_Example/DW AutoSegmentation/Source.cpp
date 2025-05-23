@@ -2,7 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
-#include <dlsdk/model.h>
+#include <dwsdk/model.h>
 
 using namespace DaoAI::DeepLearning;
 

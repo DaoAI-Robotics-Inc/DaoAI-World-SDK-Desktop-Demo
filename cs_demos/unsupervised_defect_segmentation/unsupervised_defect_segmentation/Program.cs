@@ -369,13 +369,14 @@ namespace UnsupervisedDefectSegmentationDemo
                 Console.WriteLine("create model instance");
 
                 var unsupervisedModel = new DaoAI.DeepLearningCLI.Vision.UnsupervisedDefectSegmentation(DeviceType.GPU);
-                unsupervisedModel.setDetectionLevel(DaoAI.DeepLearningCLI.DetectionLevel.PIXEL_ACCURATE);
+                unsupervisedModel.setDetectionLevel(DaoAI.DeepLearningCLI.DetectionLevel.IMAGE);
                 var component = unsupervisedModel.createComponentMemory("screw", goodImages.ToArray(), badImages.ToArray(), masksList.ToArray(), true);
                 string compFile = Path.Combine(folderPath, "component_1.pth");
                 component.save(compFile);
                 unsupervisedModel.setBatchSize(1);
+                
                 Console.WriteLine("训练组件已保存到: " + compFile);
-
+                Console.WriteLine("Image Threshold of the model is: : " + component.getImageThreshold());
                 // 8. （可选）对一张坏图进行推理，输出缺陷得分及 JSON 格式结果
                 if (badImages.Count > 0)
                 {

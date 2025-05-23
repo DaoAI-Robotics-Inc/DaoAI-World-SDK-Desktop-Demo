@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 import shutil
 from pathlib import Path
-import dlsdk.dlsdk as dlsdk
+import dwsdk.dwsdk as dwsdk
 
 # 固定显示窗口大小
 FIXED_WIDTH = 800
@@ -133,8 +133,8 @@ def onMouse(event, x, y, flags, param):
 def main():
     global originalImage, displayImage, scale, currentIndex, annotations
 
-    # 1. 初始化 dlsdk 库
-    dlsdk.initialize()
+    # 1. 初始化 dwsdk 库
+    dwsdk.initialize()
 
     # 2. 让用户输入包含图像的文件夹路径
     folderPath = input("Enter the folder path containing images: ").strip()
@@ -282,21 +282,21 @@ def main():
     for entry in os.listdir(goodDir):
         file_path = os.path.join(goodDir, entry)
         if os.path.isfile(file_path):
-            good_images.append(dlsdk.Image(file_path))
+            good_images.append(dwsdk.Image(file_path))
     for entry in os.listdir(badDir):
         file_path = os.path.join(badDir, entry)
         if os.path.isfile(file_path):
-            bad_images.append(dlsdk.Image(file_path))
+            bad_images.append(dwsdk.Image(file_path))
     for entry in os.listdir(maskDir):
         file_path = os.path.join(maskDir, entry)
         if os.path.isfile(file_path):
-            masks_list.append(dlsdk.Image(file_path))
+            masks_list.append(dwsdk.Image(file_path))
     print(f"Re-read {len(good_images)} good images, {len(bad_images)} bad images, and {len(masks_list)} masks for training.")
 
     # 7. 使用重新读取的数据构建训练组件
     print("creating model instance")
-    model_instance = dlsdk.UnsupervisedDefectSegmentation(device=dlsdk.DeviceType.GPU)
-    model_instance.setDetectionLevel(dlsdk.DetectionLevel.PIXEL_ACCURATE)
+    model_instance = dwsdk.UnsupervisedDefectSegmentation(device=dwsdk.DeviceType.GPU)
+    model_instance.setDetectionLevel(dwsdk.DetectionLevel.IMAGE)
     print("running inference")
     component = model_instance.createComponentMemory("screw", good_images, bad_images, masks_list, True)
     compFile = os.path.join(folderPath, "component_1.pth")
@@ -304,6 +304,7 @@ def main():
     model_instance.setBatchSize(1)
     print("Component memory saved to", compFile)
 
+    print("Image Threshold of the model is: ",component.getImageThreshold())
     # 8. (可选) 对所有坏图进行推理并保存结果
     if bad_images:
         for idx, img in enumerate(bad_images):
@@ -313,7 +314,7 @@ def main():
             print(f"JSON 结果 [{idx}]:", result.toAnnotationJSONString())
 
             # 可视化
-            vis = dlsdk.visualize(img, result)
+            vis = dwsdk.visualize(img, result)
 
             # 构造带索引的输出路径
             output_filename = f"test_unsupervised_result_{idx}.png"

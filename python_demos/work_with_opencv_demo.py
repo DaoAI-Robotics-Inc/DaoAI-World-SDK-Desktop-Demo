@@ -1,7 +1,7 @@
 import os
 import cv2
 import time
-import dlsdk.dlsdk as dlsdk
+import dwsdk.dwsdk as dwsdk
 import numpy as np
 import concurrent.futures
 from tkinter import Tk, filedialog
@@ -24,7 +24,7 @@ def select_folder_dialog(title="Select Folder"):
 
 def read_and_convert_images(folder_path):
     """
-    遍历指定文件夹中的所有图片文件，读取图片、将 BGR 转换为 RGB，并构造 dlsdk.Image 对象。
+    遍历指定文件夹中的所有图片文件，读取图片、将 BGR 转换为 RGB，并构造 dwsdk.Image 对象。
     
     同时统计转换时间，并返回转换后的图片列表，每个元素为 (filename, daoai_image)。
     
@@ -49,8 +49,8 @@ def read_and_convert_images(folder_path):
             start_time = time.perf_counter()
             # 将 BGR 转换为 RGB
             rgb_frame = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-            # 通过 numpy 数组构造 dlsdk.Image 对象
-            daoai_image = dlsdk.Image.from_numpy(rgb_frame, dlsdk.Image.Type.RGB)
+            # 通过 numpy 数组构造 dwsdk.Image 对象
+            daoai_image = dwsdk.Image.from_numpy(rgb_frame, dwsdk.Image.Type.RGB)
             end_time = time.perf_counter()
 
             total_conversion_time += (end_time - start_time)
@@ -89,13 +89,13 @@ def main():
     program_start = time.perf_counter()
 
     # 初始化 SDK 并加载模型
-    dlsdk.initialize()
-    model = dlsdk.ObjectDetection(model_path, device=dlsdk.DeviceType.GPU)
+    dwsdk.initialize()
+    model = dwsdk.ObjectDetection(model_path, device=dwsdk.DeviceType.GPU)
     model.setBatchSize(batch_size)
 
     # 预热推理：构造一个 dummy image，并重复 batch_size 次调用推理接口
     dummy_array = np.zeros((480, 640, 3), dtype=np.uint8)
-    dummy_image = dlsdk.Image.from_numpy(dummy_array, dlsdk.Image.Type.RGB)
+    dummy_image = dwsdk.Image.from_numpy(dummy_array, dwsdk.Image.Type.RGB)
     _ = model.inferenceBatch([dummy_image] * batch_size)
     print("Warmup inference 完成。")
 
@@ -120,7 +120,7 @@ def main():
                 print(f"推理 batch：{batch_size} 张图片，耗时 {elapsed:.2f} ms")
 
                 # 并行生成可视化结果
-                result_frames = list(vis_executor.map(lambda pair: dlsdk.visualize(pair[0], pair[1]),
+                result_frames = list(vis_executor.map(lambda pair: dwsdk.visualize(pair[0], pair[1]),
                                                        zip([img for (_, img) in batch_items], predictions)))
                 # 保存可视化图片
                 for idx, (fname, _) in enumerate(batch_items):
@@ -135,7 +135,7 @@ def main():
             if dummy_needed > 0:
                 # 构造 dummy image（尺寸以第一张图片为准，如有需要请自行调整）
                 dummy_array = np.zeros((480, 640, 3), dtype=np.uint8)
-                dummy_image = dlsdk.Image.from_numpy(dummy_array, dlsdk.Image.Type.RGB)
+                dummy_image = dwsdk.Image.from_numpy(dummy_array, dwsdk.Image.Type.RGB)
                 for _ in range(dummy_needed):
                     batch_items.append(("dummy", dummy_image))
             start = time.perf_counter()
@@ -148,7 +148,7 @@ def main():
                 print(f"最终 batch：实际 {real_count} 张图片，推理耗时 {elapsed:.2f} ms")
             real_items = batch_items[:real_count]
             real_predictions = predictions[:real_count]
-            result_frames = list(vis_executor.map(lambda pair: dlsdk.visualize(pair[0], pair[1]),
+            result_frames = list(vis_executor.map(lambda pair: dwsdk.visualize(pair[0], pair[1]),
                                                    zip([img for (_, img) in real_items], real_predictions)))
             for idx, (fname, _) in enumerate(real_items):
                 result_img = np.array(result_frames[idx])
