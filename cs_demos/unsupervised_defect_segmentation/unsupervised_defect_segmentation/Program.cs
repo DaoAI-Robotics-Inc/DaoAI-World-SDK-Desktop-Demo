@@ -373,6 +373,8 @@ namespace UnsupervisedDefectSegmentationDemo
                 var component = unsupervisedModel.createComponentMemory("screw", goodImages.ToArray(), badImages.ToArray(), masksList.ToArray(), true);
                 string compFile = Path.Combine(folderPath, "component_1.pth");
                 component.save(compFile);
+                // 若要在后续程序中重新加载该组件，可这样使用：
+                // var componentReload = unsupervisedModel.addComponentMemory("screw", "file_path");
                 unsupervisedModel.setBatchSize(1);
                 
                 Console.WriteLine("训练组件已保存到: " + compFile);

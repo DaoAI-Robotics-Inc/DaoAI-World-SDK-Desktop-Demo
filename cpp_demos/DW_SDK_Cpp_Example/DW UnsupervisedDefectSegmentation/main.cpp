@@ -369,6 +369,8 @@ int main() {
         ComponentMemory component = model.createComponentMemory("screw", good_images, {}, {}, true);
         std::string compFile = (fs::path(folderPath) / "component_1.pth").string();
         component.save(compFile);
+        // 若需在后续单独加载该组件，可这样调用:
+        // auto loadedComponent = model.addComponentMemory("screw", "file_path");
         model.setBatchSize(1);
         std::cout << "Component memory saved to " << compFile << std::endl;
 

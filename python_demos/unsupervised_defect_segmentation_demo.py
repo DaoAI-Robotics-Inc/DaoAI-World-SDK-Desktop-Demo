@@ -301,6 +301,8 @@ def main():
     component = model_instance.createComponentMemory("screw", good_images, bad_images, masks_list, True)
     compFile = os.path.join(folderPath, "component_1.pth")
     component.save(compFile)
+    # 训练后如果需要再次加载该组件，可使用:
+    # component = model_instance.addComponentMemory("screw", "file_path")
     model_instance.setBatchSize(1)
     print("Component memory saved to", compFile)
 
