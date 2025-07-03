@@ -68,7 +68,7 @@ namespace AutoSegmentationApp
         private void MainForm_Load(object sender, EventArgs e)
         {
             // 初始化深度学习 SDK（使用 DaoAIApp 别名）
-            DaoAIApp.initialize(false, 0);
+            DaoAIApp.initialize();
 
             // 加载图像
             originalImage = CvInvoke.Imread(imagePath);
@@ -111,7 +111,7 @@ namespace AutoSegmentationApp
             {
                 isDrawing = true;
                 isClickDetected = true; // 初始认为为单击
-                startPoint = new DaoAI.DeepLearningCLI.Point(e.X, e.Y, "");
+                startPoint = new DaoAI.DeepLearningCLI.Point(e.X, e.Y,0, "");
             }
         }
 
