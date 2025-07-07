@@ -1,0 +1,3 @@
+# requirements for websocket client
+websockets
+redis

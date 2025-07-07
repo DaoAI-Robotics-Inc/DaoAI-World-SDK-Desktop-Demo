@@ -1,0 +1,676 @@
+{
+  "camera_id": 3,
+  "timestamp": 1751930804382,
+  "image_width": 1280,
+  "image_height": 720,
+  "node_defs": {
+    "bdb563dd-f2bf-4fad-9b98-e6667d4b2859": {
+      "type": "models",
+      "data": {
+        "uid": "bdb563dd-f2bf-4fad-9b98-e6667d4b2859",
+        "model_type": "multilabel_detection",
+        "name": "traffic_mixed_model_v3.dwm",
+        "model_uid": "SNSMYuYvLU0hsnKUO6t0dQ",
+        "isPretrainedModel": false,
+        "classes": [],
+        "confidence_threshold": 0.5,
+        "max_number_of_objects": 50
+      }
+    },
+    "a95c2b7e-027e-45e0-8295-03380caf86fb": {
+      "type": "logicProcessor",
+      "data": {
+        "uid": "a95c2b7e-027e-45e0-8295-03380caf86fb",
+        "type": "parallel_branching",
+        "name": "parallel_branching_1"
+      }
+    },
+    "9591a6eb-25a1-4738-a7a7-7121a91618ec": {
+      "type": "dataProcessing",
+      "data": {
+        "type": "count_items",
+        "uid": "9591a6eb-25a1-4738-a7a7-7121a91618ec",
+        "name": "count_items_1",
+        "node_id": "bdb563dd-f2bf-4fad-9b98-e6667d4b2859",
+        "filter": {
+          "include_classes": ["vehicle"],
+          "type": "bounding_box_counting_filter"
+        }
+      }
+    },
+    "4cc4c236-dbf3-4f54-845d-00a387877c1a": {
+      "type": "dataProcessing",
+      "data": {
+        "uid": "4cc4c236-dbf3-4f54-845d-00a387877c1a",
+        "type": "object_movement_speed",
+        "name": "object_movement_speed_1",
+        "input_tracker_node_id": "875ad383-844f-4d8c-83d8-4042c7f0feaa",
+        "polygon": [
+          [240, 647.8917530864197],
+          [764.8, 222.72948148148146],
+          [1093.3333333333333, 241.9579259259259],
+          [1242.6666666666667, 709.8500740740741]
+        ],
+        "edge_distances": [60, 15, 60, 15]
+      }
+    },
+    "875ad383-844f-4d8c-83d8-4042c7f0feaa": {
+      "type": "dataProcessing",
+      "data": {
+        "uid": "875ad383-844f-4d8c-83d8-4042c7f0feaa",
+        "type": "byte_tracker",
+        "name": "byte_tracker_1",
+        "model_node_id": "bdb563dd-f2bf-4fad-9b98-e6667d4b2859",
+        "minimum_matching_threshold": 0.2,
+        "minimum_consecutive_frames": 1,
+        "track_activation_threshold": 0.8
+      }
+    },
+    "1135b9a7-34e9-4cd6-83a4-e02b67fa4184": {
+      "type": "logicProcessor",
+      "data": {
+        "uid": "1135b9a7-34e9-4cd6-83a4-e02b67fa4184",
+        "type": "continue_if",
+        "name": "continue_if_1",
+        "statements": [
+          {
+            "type": "counting_comparison_statement",
+            "left_operand": {
+              "type": "dynamic_operand",
+              "node_id": "9591a6eb-25a1-4738-a7a7-7121a91618ec",
+              "filter": { "type": "no_filter" }
+            },
+            "operator": ">=",
+            "right_operand": { "type": "static_operand", "value": 1 }
+          }
+        ],
+        "operator": "or"
+      }
+    },
+    "885a432b-0bc6-4700-acc1-fe39283ee61d": {
+      "type": "dataProcessing",
+      "data": {
+        "type": "count_items",
+        "uid": "885a432b-0bc6-4700-acc1-fe39283ee61d",
+        "name": "count_items_2",
+        "node_id": "bdb563dd-f2bf-4fad-9b98-e6667d4b2859",
+        "filter": {
+          "include_classes": ["people"],
+          "type": "bounding_box_counting_filter",
+          "include_flags": ["novest"]
+        }
+      }
+    },
+    "aa080ba1-5f9f-41b8-92e4-5fd7a9df66c4": {
+      "type": "logicProcessor",
+      "data": {
+        "uid": "aa080ba1-5f9f-41b8-92e4-5fd7a9df66c4",
+        "type": "continue_if",
+        "name": "continue_if_2",
+        "statements": [
+          {
+            "type": "counting_comparison_statement",
+            "left_operand": {
+              "type": "dynamic_operand",
+              "node_id": "885a432b-0bc6-4700-acc1-fe39283ee61d",
+              "filter": { "type": "no_filter" }
+            },
+            "operator": ">=",
+            "right_operand": { "type": "static_operand", "value": 1 }
+          }
+        ],
+        "operator": "or"
+      }
+    },
+    "76b1a3c6-251b-4dca-848d-189b20102b9d": {
+      "type": "visualization",
+      "data": {
+        "uid": "76b1a3c6-251b-4dca-848d-189b20102b9d",
+        "type": "bounding_box_visualization",
+        "name": "visualization_1",
+        "layers": [
+          {
+            "node_id": "c667aa97-abbb-48f1-9f4e-51cf669b0e96",
+            "include_classes": []
+          }
+        ],
+        "show_timestamp": true
+      }
+    },
+    "59a6a0c6-0bec-4c13-8a67-a6710f3e3a72": {
+      "type": "notification",
+      "data": {
+        "uid": "59a6a0c6-0bec-4c13-8a67-a6710f3e3a72",
+        "type": "dashboard_notification",
+        "name": "dashboard_notification_1",
+        "message": "检测到人员闯入",
+        "visualization_node_id": "76b1a3c6-251b-4dca-848d-189b20102b9d",
+        "expires_in": "1d"
+      }
+    },
+    "8b34f936-5cee-41f2-a677-65257c76a4ef": {
+      "type": "dataProcessing",
+      "data": {
+        "uid": "8b34f936-5cee-41f2-a677-65257c76a4ef",
+        "type": "byte_tracker",
+        "name": "byte_tracker_2",
+        "model_node_id": "bdb563dd-f2bf-4fad-9b98-e6667d4b2859",
+        "track_activation_threshold": 0.8,
+        "minimum_matching_threshold": 0.3
+      }
+    },
+    "c667aa97-abbb-48f1-9f4e-51cf669b0e96": {
+      "type": "dataProcessing",
+      "data": {
+        "uid": "c667aa97-abbb-48f1-9f4e-51cf669b0e96",
+        "type": "stay_in_zone",
+        "name": "stay_in_zone_1",
+        "class_disappear": "people",
+        "remove_non_target_detections": false,
+        "tracker_node_id": "8b34f936-5cee-41f2-a677-65257c76a4ef",
+        "polygon_points": [
+          [1093.3333333333333, 275.6077037037037],
+          [707.2, 245.69679012345676],
+          [131.2, 681.5415308641975],
+          [1264, 709.3159506172839],
+          [1093.3333333333333, 275.6077037037037]
+        ]
+      }
+    },
+    "202bd30a-c880-4517-8386-9859712f7b98": {
+      "type": "dataProcessing",
+      "data": {
+        "type": "count_items",
+        "uid": "202bd30a-c880-4517-8386-9859712f7b98",
+        "name": "count_items_3",
+        "node_id": "bdb563dd-f2bf-4fad-9b98-e6667d4b2859",
+        "filter": {
+          "include_classes": ["vehicle"],
+          "type": "bounding_box_counting_filter",
+          "include_flags": ["Motor", "sanlun"]
+        }
+      }
+    },
+    "01c856e0-3613-4cf2-a879-3d0cc1637e20": {
+      "type": "logicProcessor",
+      "data": {
+        "uid": "01c856e0-3613-4cf2-a879-3d0cc1637e20",
+        "type": "continue_if",
+        "name": "continue_if_3",
+        "statements": [
+          {
+            "type": "counting_comparison_statement",
+            "left_operand": {
+              "type": "dynamic_operand",
+              "node_id": "202bd30a-c880-4517-8386-9859712f7b98",
+              "filter": { "type": "no_filter" }
+            },
+            "operator": ">=",
+            "right_operand": { "type": "static_operand", "value": 1 }
+          }
+        ],
+        "operator": "or"
+      }
+    },
+    "74830227-a389-4acb-a9a6-d588ce860dc8": {
+      "type": "visualization",
+      "data": {
+        "uid": "74830227-a389-4acb-a9a6-d588ce860dc8",
+        "type": "bounding_box_visualization",
+        "name": "visualization_2",
+        "layers": [
+          {
+            "node_id": "bdb563dd-f2bf-4fad-9b98-e6667d4b2859",
+            "include_classes": []
+          }
+        ],
+        "show_timestamp": true
+      }
+    },
+    "e3cbac9a-ef72-46de-872b-b23f07a37c3c": {
+      "type": "notification",
+      "data": {
+        "uid": "e3cbac9a-ef72-46de-872b-b23f07a37c3c",
+        "type": "dashboard_notification",
+        "name": "dashboard_notification_2",
+        "message": "检测到非机动车闯入",
+        "visualization_node_id": "74830227-a389-4acb-a9a6-d588ce860dc8",
+        "expires_in": "1d"
+      }
+    },
+    "f69d7cbd-5498-4da6-a2ae-9d370e062417": {
+      "type": "visualization",
+      "data": {
+        "uid": "f69d7cbd-5498-4da6-a2ae-9d370e062417",
+        "type": "bounding_box_visualization",
+        "name": "visualization_3",
+        "layers": [
+          {
+            "node_id": "4cc4c236-dbf3-4f54-845d-00a387877c1a",
+            "include_classes": []
+          }
+        ],
+        "show_timestamp": true
+      }
+    }
+  },
+  "node_outputs": {
+    "input_image_key": "camera:3:frame:1751930804382",
+    "bdb563dd-f2bf-4fad-9b98-e6667d4b2859": {
+      "version": "4.5.7",
+      "flags": {},
+      "shapes": [
+        {
+          "label": "vehicle",
+          "points": [
+            [529.9334716796875, 370.4692687988281],
+            [617.3321533203125, 447.5784912109375]
+          ],
+          "group_id": 1,
+          "description": "",
+          "shape_type": "rectangle",
+          "flags": {
+            "raised": false,
+            "low": false,
+            "mianbao": false,
+            "Motor": false,
+            "Truck": false,
+            "SUV": false,
+            "car": false,
+            "sanlun": true,
+            "novest": false,
+            "havevest": false
+          },
+          "confidence": 0.996523916721344
+        },
+        {
+          "label": "vehicle",
+          "points": [
+            [1189.728271484375, 404.72723388671875],
+            [1264.396240234375, 467.5820007324219]
+          ],
+          "group_id": 2,
+          "description": "",
+          "shape_type": "rectangle",
+          "flags": {
+            "raised": false,
+            "low": false,
+            "mianbao": false,
+            "Motor": false,
+            "Truck": false,
+            "SUV": false,
+            "car": false,
+            "sanlun": true,
+            "novest": false,
+            "havevest": false
+          },
+          "confidence": 0.9963823556900024
+        },
+        {
+          "label": "vehicle",
+          "points": [
+            [642.944091796875, 403.96551513671875],
+            [717.1051635742188, 471.3515319824219]
+          ],
+          "group_id": 3,
+          "description": "",
+          "shape_type": "rectangle",
+          "flags": {
+            "raised": false,
+            "low": false,
+            "mianbao": false,
+            "Motor": false,
+            "Truck": false,
+            "SUV": false,
+            "car": false,
+            "sanlun": true,
+            "novest": false,
+            "havevest": false
+          },
+          "confidence": 0.9909242987632751
+        },
+        {
+          "label": "vehicle",
+          "points": [
+            [755.3709106445312, 301.2169494628906],
+            [798.5708618164062, 339.5643615722656]
+          ],
+          "group_id": 4,
+          "description": "",
+          "shape_type": "rectangle",
+          "flags": {
+            "raised": false,
+            "low": false,
+            "mianbao": false,
+            "Motor": false,
+            "Truck": false,
+            "SUV": false,
+            "car": true,
+            "sanlun": false,
+            "novest": false,
+            "havevest": false
+          },
+          "confidence": 0.9892863631248474
+        },
+        {
+          "label": "vehicle",
+          "points": [
+            [756.6407470703125, 228.93035888671875],
+            [786.3401489257812, 255.3094482421875]
+          ],
+          "group_id": 5,
+          "description": "",
+          "shape_type": "rectangle",
+          "flags": {
+            "raised": false,
+            "low": false,
+            "mianbao": false,
+            "Motor": false,
+            "Truck": false,
+            "SUV": false,
+            "car": true,
+            "sanlun": false,
+            "novest": false,
+            "havevest": false
+          },
+          "confidence": 0.9841498732566833
+        },
+        {
+          "label": "vehicle",
+          "points": [
+            [1121.4400634765625, 315.861328125],
+            [1168.91259765625, 350.59039306640625]
+          ],
+          "group_id": 6,
+          "description": "",
+          "shape_type": "rectangle",
+          "flags": {
+            "raised": false,
+            "low": false,
+            "mianbao": false,
+            "Motor": false,
+            "Truck": false,
+            "SUV": false,
+            "car": true,
+            "sanlun": false,
+            "novest": false,
+            "havevest": false
+          },
+          "confidence": 0.9821166396141052
+        },
+        {
+          "label": "vehicle",
+          "points": [
+            [1029.9068603515625, 211.9867706298828],
+            [1056.1082763671875, 231.61041259765625]
+          ],
+          "group_id": 7,
+          "description": "",
+          "shape_type": "rectangle",
+          "flags": {
+            "raised": false,
+            "low": false,
+            "mianbao": false,
+            "Motor": false,
+            "Truck": false,
+            "SUV": false,
+            "car": true,
+            "sanlun": false,
+            "novest": false,
+            "havevest": false
+          },
+          "confidence": 0.9753839373588562
+        },
+        {
+          "label": "vehicle",
+          "points": [
+            [758.5791625976562, 256.1561279296875],
+            [796.5487060546875, 287.1822814941406]
+          ],
+          "group_id": 8,
+          "description": "",
+          "shape_type": "rectangle",
+          "flags": {
+            "raised": false,
+            "low": false,
+            "mianbao": false,
+            "Motor": false,
+            "Truck": false,
+            "SUV": false,
+            "car": true,
+            "sanlun": false,
+            "novest": false,
+            "havevest": false
+          },
+          "confidence": 0.9640028476715088
+        },
+        {
+          "label": "vehicle",
+          "points": [
+            [625.9248046875, 198.61328125],
+            [648.3790283203125, 221.6370391845703]
+          ],
+          "group_id": 9,
+          "description": "",
+          "shape_type": "rectangle",
+          "flags": {
+            "raised": false,
+            "low": false,
+            "mianbao": false,
+            "Motor": false,
+            "Truck": false,
+            "SUV": false,
+            "car": true,
+            "sanlun": false,
+            "novest": false,
+            "havevest": false
+          },
+          "confidence": 0.9292638897895813
+        }
+      ],
+      "imagePath": "",
+      "imageData": null,
+      "imageWidth": 1280,
+      "imageHeight": 720,
+      "exec_time": "3017.89 ms"
+    },
+    "9591a6eb-25a1-4738-a7a7-7121a91618ec": 9,
+    "202bd30a-c880-4517-8386-9859712f7b98": 3,
+    "885a432b-0bc6-4700-acc1-fe39283ee61d": 0,
+    "1135b9a7-34e9-4cd6-83a4-e02b67fa4184": true,
+    "aa080ba1-5f9f-41b8-92e4-5fd7a9df66c4": false,
+    "01c856e0-3613-4cf2-a879-3d0cc1637e20": true,
+    "875ad383-844f-4d8c-83d8-4042c7f0feaa": {
+      "predictions": [
+        {
+          "points": [
+            [568.6498413085938, 348.3253173828125],
+            [644.3988037109375, 418.827880859375]
+          ],
+          "shape_type": "rectangle",
+          "confidence": 0.9960744380950928,
+          "label": "vehicle",
+          "tracker_id": 13143
+        },
+        {
+          "points": [
+            [764.40673828125, 291.0020446777344],
+            [805.5230712890625, 325.74468994140625]
+          ],
+          "shape_type": "rectangle",
+          "confidence": 0.9953493475914001,
+          "label": "vehicle",
+          "tracker_id": 13144
+        },
+        {
+          "points": [
+            [1175.5889892578125, 386.0719909667969],
+            [1241.0836181640625, 442.61358642578125]
+          ],
+          "shape_type": "rectangle",
+          "confidence": 0.9936036467552185,
+          "label": "vehicle",
+          "tracker_id": 13145
+        },
+        {
+          "points": [
+            [668.1484375, 382.5212097167969],
+            [733.7236938476562, 443.2781982421875]
+          ],
+          "shape_type": "rectangle",
+          "confidence": 0.9869917631149292,
+          "label": "vehicle",
+          "tracker_id": 13146
+        },
+        {
+          "points": [
+            [769.529052734375, 248.41384887695312],
+            [806.3091430664062, 276.5739440917969]
+          ],
+          "shape_type": "rectangle",
+          "confidence": 0.9858171343803406,
+          "label": "vehicle",
+          "tracker_id": 13147
+        },
+        {
+          "points": [
+            [1112.2125244140625, 304.2341613769531],
+            [1158.1444091796875, 338.6484375]
+          ],
+          "shape_type": "rectangle",
+          "confidence": 0.9801298379898071,
+          "label": "vehicle",
+          "tracker_id": 13148
+        },
+        {
+          "points": [
+            [765.120361328125, 221.6654510498047],
+            [794.1400146484375, 246.74952697753906]
+          ],
+          "shape_type": "rectangle",
+          "confidence": 0.961044430732727,
+          "label": "vehicle",
+          "tracker_id": 13149
+        },
+        {
+          "points": [
+            [613.8031616210938, 203.99317932128906],
+            [643.6787109375, 228.7084503173828]
+          ],
+          "shape_type": "rectangle",
+          "confidence": 0.946108877658844,
+          "label": "vehicle",
+          "tracker_id": 13150
+        },
+        {
+          "points": [
+            [1026.4671630859375, 209.14306640625],
+            [1051.3421630859375, 226.6844940185547]
+          ],
+          "shape_type": "rectangle",
+          "confidence": 0.9359264969825745,
+          "label": "vehicle",
+          "tracker_id": 13151
+        },
+        {
+          "points": [
+            [171.91729736328125, 278.6028137207031],
+            [282.44915771484375, 366.534423828125]
+          ],
+          "shape_type": "rectangle",
+          "confidence": 0.9181773662567139,
+          "label": "vehicle",
+          "tracker_id": 13152
+        },
+        {
+          "points": [
+            [425.57635498046875, 654.8292236328125],
+            [642.2543334960938, 718.050048828125]
+          ],
+          "shape_type": "rectangle",
+          "confidence": 0.913420557975769,
+          "label": "vehicle",
+          "tracker_id": 13153
+        }
+      ],
+      "processing_time_ms": 433.58,
+      "exec_time": "433.61 ms"
+    },
+    "74830227-a389-4acb-a9a6-d588ce860dc8": {
+      "image_width": 1280,
+      "image_height": 720,
+      "exec_time": "46.47 ms"
+    },
+    "4cc4c236-dbf3-4f54-845d-00a387877c1a": {
+      "predictions": [
+        {
+          "points": [
+            [568.6498413085938, 348.3253173828125],
+            [644.3988037109375, 418.827880859375]
+          ],
+          "shape_type": "rectangle",
+          "confidence": 0.9960744380950928,
+          "label": "vehicle",
+          "tracker_id": 13143,
+          "speed": 24.40657660580439,
+          "speed_unit": "kmh"
+        },
+        {
+          "points": [
+            [764.40673828125, 291.0020446777344],
+            [805.5230712890625, 325.74468994140625]
+          ],
+          "shape_type": "rectangle",
+          "confidence": 0.9953493475914001,
+          "label": "vehicle",
+          "tracker_id": 13144,
+          "speed": 19.944329100321596,
+          "speed_unit": "kmh"
+        },
+        {
+          "points": [
+            [668.1484375, 382.5212097167969],
+            [733.7236938476562, 443.2781982421875]
+          ],
+          "shape_type": "rectangle",
+          "confidence": 0.9869917631149292,
+          "label": "vehicle",
+          "tracker_id": 13146,
+          "speed": 2800.297455465161,
+          "speed_unit": "kmh"
+        },
+        {
+          "points": [
+            [769.529052734375, 248.41384887695312],
+            [806.3091430664062, 276.5739440917969]
+          ],
+          "shape_type": "rectangle",
+          "confidence": 0.9858171343803406,
+          "label": "vehicle",
+          "tracker_id": 13147,
+          "speed": 10.819870596048421,
+          "speed_unit": "kmh"
+        },
+        {
+          "points": [
+            [765.120361328125, 221.6654510498047],
+            [794.1400146484375, 246.74952697753906]
+          ],
+          "shape_type": "rectangle",
+          "confidence": 0.961044430732727,
+          "label": "vehicle",
+          "tracker_id": 13149,
+          "speed": 3.1429944588930763,
+          "speed_unit": "kmh"
+        }
+      ],
+      "exec_time": "2.21 ms"
+    },
+    "e3cbac9a-ef72-46de-872b-b23f07a37c3c": null,
+    "f69d7cbd-5498-4da6-a2ae-9d370e062417": {
+      "image_width": 1280,
+      "image_height": 720,
+      "exec_time": "26.65 ms"
+    }
+  }
+}
