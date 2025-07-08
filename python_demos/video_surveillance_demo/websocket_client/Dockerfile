@@ -3,4 +3,4 @@ WORKDIR /app
 COPY requirements.txt ./requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
-CMD ["sh", "-c", "python main.py --server $WS_SERVER --camera-ids $CAMERA_IDS"]
+CMD ["sh", "-c", "python video_vehicle_flow_demo.py --server $WS_SERVER --camera-ids $CAMERA_IDS"]
