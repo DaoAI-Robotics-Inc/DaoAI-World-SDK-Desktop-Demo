@@ -9,6 +9,7 @@ import redis_utils
 import s3_utils
 
 QUEUE_NAME = "alerts_queue"
+EXPIRY_TIME_MILLISECONDS = 2000
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -48,9 +49,15 @@ def process_messages():
     while True:
         try:
             _, message = redis_client.blpop(QUEUE_NAME)
+
             data = json.loads(message)
             camera_id = data.get("camera_id")
             timestamp = data.get("timestamp")
+
+            # Discard old messages
+            if timestamp < time.time() * 1000 - EXPIRY_TIME_MILLISECONDS:
+                continue
+
             text = "Hello"
             image_data = redis_utils.get_camera_frame(camera_id, timestamp)
             if image_data:
