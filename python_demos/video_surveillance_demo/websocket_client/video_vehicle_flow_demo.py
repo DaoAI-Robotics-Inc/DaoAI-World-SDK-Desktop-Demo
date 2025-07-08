@@ -1,3 +1,4 @@
+import argparse
 import asyncio
 import json
 import logging
@@ -261,7 +262,7 @@ async def handle_message(msg: str) -> None:
     await store_stats(camera_id, totals)
 
 async def connect_and_listen(server, camera_ids):
-    uri = f"ws://{server.rstrip('/')}" + f"/stream/ws?client_id={CLIENT_ID}"
+    uri = f"{server.rstrip('/')}" + f"/stream/ws?client_id={CLIENT_ID}"
     while True:
         try:
             async with websockets.connect(uri) as websocket:
@@ -281,14 +282,40 @@ async def connect_and_listen(server, camera_ids):
             logger.error("Connection error: %s", exc)
             await asyncio.sleep(5)
 
-async def main():
-    import argparse
+def parse_args():
     parser = argparse.ArgumentParser(description="Vehicle flow demo")
-    parser.add_argument("--server", required=True, help="Server host:port")
-    parser.add_argument("--camera-ids", required=True, help="Comma separated IDs")
-    args = parser.parse_args()
+    parser.add_argument(
+        "--server",
+        default=os.getenv("WS_SERVER"),
+        help="Server host:port, e.g. 127.0.0.1:8000",
+    )
+    parser.add_argument(
+        "--camera-ids",
+        default=os.getenv("CAMERA_IDS"),
+        help="Comma-separated camera IDs",
+    )
+    parser.add_argument(
+        "--redis-host", default=os.getenv("REDIS_HOST", "redis"), help="Redis host"
+    )
+    parser.add_argument(
+        "--redis-port",
+        type=int,
+        default=int(os.getenv("REDIS_PORT", "6379")),
+        help="Redis port",
+    )
+    return parser.parse_args()
 
+
+async def main():
+    args = parse_args()
     camera_ids = [int(cid) for cid in args.camera_ids.split(',') if cid]
+
+    global redis_client
+    redis_client = aioredis.from_url(
+        os.getenv("REDIS_URL", f"redis://{args.redis_host}:{args.redis_port}/0"),
+        decode_responses=True,
+    )
+
     await connect_and_listen(args.server, camera_ids)
 
 if __name__ == "__main__":
@@ -296,3 +323,4 @@ if __name__ == "__main__":
         asyncio.run(main())
     except KeyboardInterrupt:
         pass
+
