@@ -7,36 +7,59 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     healthcheck:
       test: pg_isready -U postgres
       start_period: 40s
   redis:
-    image: redis:8-alpine
+    image: redis/redis-stack
     restart: always
+    environment:
+      REDIS_ARGS: --requirepass ${REDIS_PASSWORD}
     ports:
       - "6379:6379"
     volumes:
       - redis_data:/data
+  minio:
+    image: quay.io/minio/minio
+    restart: always
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MC_HOST_LOCALHOST_ALIAS: http://${MINIO_ROOT_USER}:${MINIO_ROOT_PASSWORD}@localhost:9000
+    volumes:
+      - minio_data:/data
+      - ./minio/initialize.sh:/etc/initialize.sh
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    entrypoint: /etc/initialize.sh
   websocket_client:
     build: ./websocket_client
     restart: always
     environment:
       WS_SERVER: ${WS_SERVER}
       CAMERA_IDS: ${CAMERA_IDS}
+      REDIS_URL: redis://default:${REDIS_PASSWORD}@redis:6379/0
     depends_on:
       - redis
   alert_processor:
     build: ./alert_processor
     restart: always
     environment:
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      REDIS_SERVER: ${REDIS_SERVER}
+      POSTGRES_URL: postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/postgres
+      REDIS_URL: redis://default:${REDIS_PASSWORD}@redis:6379/0
+      S3_ENDPOINT: http://minio:9000
+      S3_ACCESS_KEY: ${MINIO_ROOT_USER}
+      S3_SECRET_KEY: ${MINIO_ROOT_PASSWORD}
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_started
 volumes:
-  db_data:
+  postgres_data:
   redis_data:
+  minio_data:
