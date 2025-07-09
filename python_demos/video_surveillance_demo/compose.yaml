@@ -5,7 +5,7 @@ services:
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - "5432:5432"
+      - "25432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
@@ -18,7 +18,7 @@ services:
     environment:
       REDIS_ARGS: --requirepass ${REDIS_PASSWORD}
     ports:
-      - "6379:6379"
+      - "26379:6379"
     volumes:
       - redis_data:/data
   minio:
@@ -32,14 +32,16 @@ services:
       - minio_data:/data
       - ./minio/initialize.sh:/etc/initialize.sh
     ports:
-      - "9000:9000"
-      - "9001:9001"
+      - "29000:9000"
+      - "29001:9001"
     entrypoint: /etc/initialize.sh
   websocket_client:
     build: ./websocket_client
     restart: always
     environment:
       WS_SERVER: ${WS_SERVER}
+      REDIS_SERVER: ${REDIS_SERVER}
+      API_SERVER: ${API_SERVER}
       CAMERA_IDS: ${CAMERA_IDS}
       REDIS_URL: redis://default:${REDIS_PASSWORD}@redis:6379/0
     depends_on:
