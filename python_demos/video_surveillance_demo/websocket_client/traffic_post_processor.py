@@ -1,4 +1,3 @@
-import argparse
 import asyncio
 import json
 import logging
@@ -618,33 +617,21 @@ async def handle_message(msg: str) -> None:
     await store_stats(camera_id, totals)
 
 
-def parse_args():
-    parser = argparse.ArgumentParser(description="Vehicle flow demo")
-    parser.add_argument(
-        "--redis-host", default=os.getenv("REDIS_HOST", "redis"), help="Redis host"
-    )
-    parser.add_argument(
-        "--redis-port",
-        type=int,
-        default=int(os.getenv("REDIS_PORT", "6379")),
-        help="Redis port",
-    )
-    return parser.parse_args()
-
-
-async def main():
-    args = parse_args()
-
+async def _main_async() -> None:
+    """Initialize Redis client and start polling loop."""
     global redis_client
     redis_client = aioredis.from_url(
-        os.getenv("REDIS_URL", f"redis://{args.redis_host}:{args.redis_port}/0"),
-        decode_responses=True,
+        os.getenv("REDIS_URL", "redis://redis:6379/0"), decode_responses=True
     )
-
     await poll_and_process()
 
-if __name__ == "__main__":
+
+def main() -> None:
     try:
-        asyncio.run(main())
+        asyncio.run(_main_async())
     except KeyboardInterrupt:
         pass
+
+
+if __name__ == "__main__":
+    main()
