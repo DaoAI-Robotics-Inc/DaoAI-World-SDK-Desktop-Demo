@@ -8,9 +8,11 @@ from collections import defaultdict, deque
 from typing import Dict, List, Tuple
 
 import requests
-import websockets
 from redis import asyncio as aioredis
 import redis
+import cv2
+import numpy as np
+import math
 
 # Flags that represent vehicle classes in the received JSON. These are used
 # when attempting to categorise a detected vehicle from the flags field. The
@@ -38,6 +40,12 @@ track_centers: Dict[int, Dict[int, Tuple[float, float]]] = defaultdict(dict)
 # speed_histories[camera_id] -> deque[(timestamp, speed)] for running average
 speed_histories: Dict[int, deque] = defaultdict(deque)
 
+# tracking state for computing object speeds
+speed_states: Dict[int, Dict[int, Dict[str, object]]] = defaultdict(dict)
+
+# configuration for speed computation per camera
+speed_configs: Dict[int, Dict[str, object]] = {}
+
 # Placeholder redis client for persisting statistics
 redis_client: aioredis.Redis | None = None
 
@@ -62,6 +70,107 @@ def iou(box1: Tuple[float, float, float, float], box2: Tuple[float, float, float
         return 0.0
 
     return inter_area / union_area
+
+
+def _compute_homography(
+    polygon: List[Tuple[float, float]], edge_distances: List[float]
+) -> np.ndarray:
+    src = np.array(polygon, dtype=np.float32)
+
+    dst = [np.array([0.0, 0.0], dtype=np.float32)]
+    for i in range(1, len(src)):
+        vec = src[i] - src[i - 1]
+        pix_len = float(np.linalg.norm(vec)) or 1.0
+        scale = edge_distances[i - 1] / pix_len
+        dst.append(dst[i - 1] + vec * scale)
+
+    dst = np.array(dst, dtype=np.float32)
+
+    if len(src) == 4:
+        H = cv2.getPerspectiveTransform(src, dst)
+    else:
+        H, _ = cv2.findHomography(src, dst)
+    return H
+
+
+def compute_speeds_inplace(
+    dets: List[Dict[str, object]],
+    timestamp: int,
+    polygon: List[Tuple[float, float]],
+    edge_distances: List[float],
+    states: Dict[int, Dict[str, object]],
+    smoothing_window: int = 1,
+    unit: str = "kmh",
+) -> None:
+    H = _compute_homography(polygon, edge_distances)
+    for det in dets:
+        box = det.get("box")
+        tracker_id = det.get("tracker")
+        if box is None or tracker_id is None:
+            continue
+        cx = (box[0] + box[2]) / 2.0
+        cy = (box[1] + box[3]) / 2.0
+        world = cv2.perspectiveTransform(
+            np.array([[[cx, cy]]], dtype=np.float32), H
+        )[0][0]
+        state = states.get(tracker_id, {"last_pos": None, "last_time": None, "speeds": []})
+        last_pos = state["last_pos"]
+        last_time = state["last_time"]
+        speeds = state["speeds"]
+        speed_mps = 0.0
+        if last_pos is not None and last_time is not None and timestamp > last_time:
+            dx = world[0] - last_pos[0]
+            dy = world[1] - last_pos[1]
+            dist = math.hypot(dx, dy)
+            dt = (timestamp - last_time) / 1000.0
+            if dt > 0:
+                inst_speed = dist / dt
+                speeds.append(inst_speed)
+                if smoothing_window > 1:
+                    speeds = speeds[-smoothing_window:]
+                speed_mps = sum(speeds) / len(speeds)
+            else:
+                speeds = []
+        states[tracker_id] = {"last_pos": world, "last_time": timestamp, "speeds": speeds}
+        if unit == "kmh":
+            det["speed"] = float(speed_mps * 3.6)
+        elif unit == "cms":
+            det["speed"] = float(speed_mps * 100.0)
+        else:
+            det["speed"] = float(speed_mps)
+        det["speed_unit"] = unit
+
+
+def ensure_speed_config(camera_id: int, data: Dict[str, object]) -> None:
+    if camera_id in speed_configs:
+        return
+    node_defs = data.get("node_defs", {})
+    for node in node_defs.values():
+        if not isinstance(node, dict):
+            continue
+        if node.get("type") != "dataProcessing":
+            continue
+        cfg = node.get("data") or {}
+        if cfg.get("type") != "object_movement_speed":
+            continue
+        polygon = cfg.get("polygon")
+        edge_distances = cfg.get("edge_distances")
+        if not polygon or not edge_distances:
+            continue
+        try:
+            polygon = [tuple(map(float, p)) for p in polygon]
+            edge_distances = [float(x) for x in edge_distances]
+        except Exception:
+            continue
+        unit = cfg.get("unit", "kmh")
+        smoothing = int(cfg.get("smoothing_window", 1))
+        speed_configs[camera_id] = {
+            "polygon": polygon,
+            "edge_distances": edge_distances,
+            "unit": unit,
+            "smoothing_window": smoothing,
+        }
+        break
 
 
 
@@ -94,7 +203,29 @@ def get_camera_frame(camera_id: int, timestamp: int) -> bytes | None:
     return r_server.hget(hash_name, "image_data")
 
 
+def get_latest_camera_frame(camera_id: int) -> bytes | None:
+    """Return the latest frame image bytes for the given camera."""
+    pattern = f"camera:{camera_id}:frame:*"
+    latest_ts = None
+    latest_key = None
+    for key in r_server.scan_iter(pattern):
+        try:
+            ts = int(key.rsplit(":", 1)[-1])
+            if latest_ts is None or ts > latest_ts:
+                latest_ts = ts
+                latest_key = key
+        except Exception:
+            continue
+    if latest_key:
+        return r_server.hget(latest_key, "image_data")
+    return None
+
+
 API_ENDPOINT = os.getenv("API_SERVER", "http://localhost:38080")
+
+# workflow and node constants for traffic statistics
+TARGET_WORKFLOW_ID = int(os.getenv("TARGET_WORKFLOW_ID", "5"))
+TARGET_NODE_ID = os.getenv("TARGET_NODE_ID", "")
 
 
 def run_workflow(input_image: bytes, workflow_id: int, target_node_id: str | None = None) -> requests.Response:
@@ -103,6 +234,40 @@ def run_workflow(input_image: bytes, workflow_id: int, target_node_id: str | Non
     return requests.post(
         API_ENDPOINT + f"/workflows/{workflow_id}/run", files=files, params=params
     )
+
+
+def list_target_cameras(workflow_id: int) -> List[int]:
+    """Return camera IDs associated with the given workflow."""
+    try:
+        resp = requests.get(
+            f"{API_ENDPOINT}/cameras",
+            params={"workflow_ids": workflow_id, "offset": 0, "limit": 200},
+        )
+        if resp.status_code != 200:
+            logger.error("Failed to list cameras: HTTP %d", resp.status_code)
+            return []
+        data = resp.json()
+        items = []
+        if isinstance(data, dict):
+            items = data.get("items") or data.get("cameras") or []
+        elif isinstance(data, list):
+            items = data
+        camera_ids: List[int] = []
+        for item in items:
+            cid = None
+            if isinstance(item, dict):
+                cid = item.get("id") or item.get("camera_id")
+            else:
+                cid = item
+            try:
+                if cid is not None:
+                    camera_ids.append(int(cid))
+            except Exception:
+                continue
+        return camera_ids
+    except Exception as exc:
+        logger.error("Error listing cameras: %s", exc)
+        return []
 
 
 async def check_accident(image_key: str | None) -> bool:
@@ -144,6 +309,39 @@ async def store_stats(camera_id: int, counts: Dict[str, int]) -> None:
         logger.error("Failed to store stats to redis: %s", exc)
 
 
+async def poll_and_process() -> None:
+    """Continuously fetch frames from Redis, run workflow and process results."""
+    camera_ids = list_target_cameras(TARGET_WORKFLOW_ID)
+    if not camera_ids:
+        logger.warning("No cameras found for workflow %d", TARGET_WORKFLOW_ID)
+        return
+
+    async def process_camera(cid: int) -> None:
+        while True:
+            frame = await asyncio.to_thread(get_latest_camera_frame, cid)
+            if frame is not None:
+                resp = await asyncio.to_thread(
+                    run_workflow, frame, TARGET_WORKFLOW_ID, TARGET_NODE_ID
+                )
+                try:
+                    data = resp.json()
+                except Exception as exc:
+                    logger.error("Invalid response for camera %s: %s", cid, exc)
+                    await asyncio.sleep(0.01)
+                    continue
+                await handle_message(json.dumps(data))
+                logger.info(
+                    "Camera %s 测试4: 车流量统计 | workflow(%d) \u2192 HTTP %d",
+                    cid,
+                    TARGET_WORKFLOW_ID,
+                    resp.status_code,
+                )
+            await asyncio.sleep(0.01)
+
+    tasks = [asyncio.create_task(process_camera(cid)) for cid in camera_ids]
+    await asyncio.gather(*tasks)
+
+
 async def handle_message(msg: str) -> None:
     """Process a single WebSocket message."""
     try:
@@ -160,6 +358,8 @@ async def handle_message(msg: str) -> None:
     if camera_id is None:
         logger.warning("camera_id missing in message")
         return
+
+    ensure_speed_config(camera_id, data)
 
     wrong_way_detected = False
     accident_detected = False
@@ -213,6 +413,19 @@ async def handle_message(msg: str) -> None:
                     det["cls"] = lbl.lower()
 
     detections = list(detections_by_tracker.values())
+
+    cfg = speed_configs.get(camera_id)
+    if cfg:
+        ts = int(data.get("timestamp") or int(time.time() * 1000))
+        compute_speeds_inplace(
+            detections,
+            ts,
+            cfg["polygon"],
+            cfg["edge_distances"],
+            speed_states[camera_id],
+            cfg.get("smoothing_window", 1),
+            cfg.get("unit", "kmh"),
+        )
 
     # Tally vehicles found in this frame for reporting
     frame_counts: Dict[str, int] = defaultdict(int)
@@ -404,39 +617,9 @@ async def handle_message(msg: str) -> None:
 
     await store_stats(camera_id, totals)
 
-async def connect_and_listen(server, camera_ids):
-    uri = f"{server.rstrip('/')}" + f"/stream/ws?client_id={CLIENT_ID}"
-    while True:
-        try:
-            async with websockets.connect(uri) as websocket:
-                await websocket.send(json.dumps({"action": "subscribe", "camera_ids": camera_ids}))
-                logger.info("Subscribed to cameras %s", camera_ids)
-                while True:
-                    try:
-                        message = await websocket.recv()
-                        await handle_message(message)
-                    except websockets.ConnectionClosed:
-                        logger.warning("WebSocket closed, reconnecting...")
-                        break
-                    except Exception as exc:
-                        logger.error("Error handling message: %s", exc)
-            await asyncio.sleep(1)
-        except Exception as exc:
-            logger.error("Connection error: %s", exc)
-            await asyncio.sleep(5)
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Vehicle flow demo")
-    parser.add_argument(
-        "--server",
-        default=os.getenv("WS_SERVER"),
-        help="Server host:port, e.g. 127.0.0.1:8000",
-    )
-    parser.add_argument(
-        "--camera-ids",
-        default=os.getenv("CAMERA_IDS"),
-        help="Comma-separated camera IDs",
-    )
     parser.add_argument(
         "--redis-host", default=os.getenv("REDIS_HOST", "redis"), help="Redis host"
     )
@@ -451,7 +634,6 @@ def parse_args():
 
 async def main():
     args = parse_args()
-    camera_ids = [int(cid) for cid in args.camera_ids.split(',') if cid]
 
     global redis_client
     redis_client = aioredis.from_url(
@@ -459,7 +641,7 @@ async def main():
         decode_responses=True,
     )
 
-    await connect_and_listen(args.server, camera_ids)
+    await poll_and_process()
 
 if __name__ == "__main__":
     try:
