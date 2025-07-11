@@ -225,6 +225,10 @@ def get_latest_camera_frame(camera_id: int) -> bytes | None:
 
 API_ENDPOINT = os.getenv("API_SERVER", "http://localhost:38080")
 
+# workflow and node constants for traffic statistics
+TARGET_WORKFLOW_ID = int(os.getenv("TARGET_WORKFLOW_ID", "5"))
+TARGET_NODE_ID = os.getenv("TARGET_NODE_ID", "")
+
 
 
 def run_workflow(input_image: bytes, workflow_id: int, target_node_id: str | None = None) -> requests.Response:
@@ -233,8 +237,6 @@ def run_workflow(input_image: bytes, workflow_id: int, target_node_id: str | Non
     return requests.post(
         API_ENDPOINT + f"/workflows/{workflow_id}/run", files=files, params=params
     )
-
-
 
 
 async def check_accident(image_key: str | None) -> bool:
@@ -274,8 +276,6 @@ async def store_stats(camera_id: int, counts: Dict[str, int]) -> None:
         await redis_client.hset(f"camera:{camera_id}:counts", mapping=counts)
     except Exception as exc:
         logger.error("Failed to store stats to redis: %s", exc)
-
-
 
 
 async def handle_message(msg: str) -> None:
@@ -553,7 +553,6 @@ async def handle_message(msg: str) -> None:
 
     await store_stats(camera_id, totals)
 
-
 async def connect_and_listen(server: str, camera_ids: List[int]) -> None:
     """Subscribe to cameras via WebSocket and handle incoming messages."""
     uri = f"{server.rstrip('/')}" + f"/stream/ws?client_id={CLIENT_ID}"
@@ -578,7 +577,6 @@ async def connect_and_listen(server: str, camera_ids: List[int]) -> None:
             logger.error("Connection error: %s", exc)
             await asyncio.sleep(5)
 
-
 async def _main_async() -> None:
     """Initialize Redis client and start WebSocket listener."""
     global redis_client
@@ -589,7 +587,6 @@ async def _main_async() -> None:
     camera_ids_env = os.getenv("CAMERA_IDS", "")
     camera_ids = [int(cid) for cid in camera_ids_env.split(',') if cid]
     await connect_and_listen(server, camera_ids)
-
 
 def main() -> None:
     try:
