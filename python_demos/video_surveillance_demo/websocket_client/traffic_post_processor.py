@@ -19,18 +19,20 @@ import math
 # program no longer strictly filters by these categories so that any provided
 # label can be counted.
 VEHICLE_CATEGORIES = ["car", "Truck", "SUV", "Motor", "mianbao", "sanlun"]
-ACCIDENT_WORKFLOW_ID = 8
+ACCIDENT_WORKFLOW_ID = 52
+ACCIDENT_NODE_ID = "a3dc06bc-fd72-4941-a5c7-9be854192370"
+EXPECTED_SPEED = 50
+CAMERA_IDS = [4,42]
 CLIENT_ID = "demo_client"
-IOU_THRESHOLD = 0.1
+
+
+IOU_THRESHOLD = 0.25
+API_ENDPOINT   = os.getenv("API_SERVER", "http://s1.daoai.ca:38080")
 REDIS_SERVER_URL   = os.getenv(
     "REDIS_SERVER",
     "redis://default:mypassword@192.168.10.101:16379/0"
 )
 # expected normal traffic speed (km/h)
-EXPECTED_SPEED = 100
-ACCIDENT_NODE_ID = "5416394f-7193-409c-aec2-5f4a435317db"
-CAMERA_IDS = [4]
-
 BASE_DIR = os.path.dirname(__file__)
 ALERT_DIR = os.path.join(BASE_DIR, "alert")
 LOG_FILE = os.path.join(BASE_DIR, "logs.txt")
@@ -323,16 +325,6 @@ async def check_accident(image_key: str | None) -> bool:
     return False
 
 
-async def store_stats(camera_id: int, counts: Dict[str, int]) -> None:
-    """Placeholder for persisting vehicle counts into Redis."""
-    if redis_client is None:
-        return
-    try:
-        await redis_client.hset(f"camera:{camera_id}:counts", mapping=counts)
-    except Exception as exc:
-        logger.error("Failed to store stats to redis: %s", exc)
-
-
 async def handle_message(msg: str) -> None:
     """Process a single WebSocket message."""
     try:
@@ -570,6 +562,7 @@ async def handle_message(msg: str) -> None:
                     camera_id,
                 )
 
+
     if wrong_way_ids:
         msg = f"Camera {camera_id} wrong-way trackers: {wrong_way_ids}"
         logger.warning("Camera %s wrong-way trackers: %s", camera_id, wrong_way_ids)
@@ -648,8 +641,6 @@ async def handle_message(msg: str) -> None:
         status,
         anomaly_msg,
     )
-
-    await store_stats(camera_id, totals)
 
 async def connect_and_listen(server: str, camera_ids: List[int]) -> None:
     """Subscribe to cameras via WebSocket and handle incoming messages."""
