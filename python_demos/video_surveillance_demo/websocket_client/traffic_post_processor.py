@@ -31,7 +31,19 @@ EXPECTED_SPEED = 100
 ACCIDENT_NODE_ID = "5416394f-7193-409c-aec2-5f4a435317db"
 CAMERA_IDS = [4]
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+BASE_DIR = os.path.dirname(__file__)
+ALERT_DIR = os.path.join(BASE_DIR, "alert")
+LOG_FILE = os.path.join(BASE_DIR, "logs.txt")
+os.makedirs(ALERT_DIR, exist_ok=True)
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(),
+        logging.FileHandler(LOG_FILE, encoding="utf-8"),
+    ],
+)
 logger = logging.getLogger(__name__)
 
 # vehicle_counts[camera_id][category] -> count
@@ -226,6 +238,32 @@ def get_latest_camera_frame(camera_id: int) -> bytes | None:
     return None
 
 
+def save_alert(event_type: str, message: str, image_key: str | None, camera_id: int) -> None:
+    """Persist alert log and related image under ALERT_DIR."""
+    ts = int(time.time() * 1000)
+    event_dir = os.path.join(ALERT_DIR, event_type)
+    os.makedirs(event_dir, exist_ok=True)
+    log_path = os.path.join(event_dir, f"{ts}.txt")
+    with open(log_path, "w", encoding="utf-8") as f:
+        f.write(message)
+
+    image_bytes = None
+    if image_key:
+        try:
+            parts = image_key.split(":")
+            if len(parts) == 4:
+                cid = int(parts[1])
+                ts_img = int(parts[3])
+                image_bytes = get_camera_frame(cid, ts_img)
+        except Exception:
+            image_bytes = None
+    if not image_bytes:
+        image_bytes = get_latest_camera_frame(camera_id)
+    if image_bytes:
+        with open(os.path.join(event_dir, f"{ts}.jpg"), "wb") as img_f:
+            img_f.write(image_bytes)
+
+
 API_ENDPOINT = os.getenv("API_SERVER", "http://localhost:38080")
 
 # workflow and node constants for traffic statistics
@@ -402,19 +440,31 @@ async def handle_message(msg: str) -> None:
                     if not entry.get("detected") and now - float(entry["start"]) >= 3:
                         accident = await check_accident(image_key)
                         if accident:
-                            logger.warning(
-                                "Camera %s tracker %s \u68c0\u6d4b\u5230\u4ea4\u901a\u4e8b\u6545",
-                                camera_id,
-                                tracker,
+                            msg = (
+                                f"Camera {camera_id} tracker {tracker} \u68c0\u6d4b\u5230\u4ea4\u901a\u4e8b\u6545"
                             )
+                            logger.warning(msg)
                             accident_detected = True
-                        else:
-                            logger.warning(
-                                "Camera %s tracker %s \u68c0\u6d4b\u5230\u8f66\u8f86\u5f02\u5e38\u505c\u6b62",
+                            await asyncio.to_thread(
+                                save_alert,
+                                "accident",
+                                msg,
+                                image_key,
                                 camera_id,
-                                tracker,
                             )
+                        else:
+                            msg = (
+                                f"Camera {camera_id} tracker {tracker} \u68c0\u6d4b\u5230\u8f66\u8f86\u5f02\u5e38\u505c\u6b62"
+                            )
+                            logger.warning(msg)
                             abnormal_stop_detected = True
+                            await asyncio.to_thread(
+                                save_alert,
+                                "abnormal_stop",
+                                msg,
+                                image_key,
+                                camera_id,
+                            )
                         entry["detected"] = True
             else:
                 low_speed_tracker[camera_id].pop(tracker, None)
@@ -441,8 +491,18 @@ async def handle_message(msg: str) -> None:
         detection_dirs[tracker or -1] = sign
 
         if speed is not None and speed < -5:
-            logger.warning("Camera %s tracker %s \u68c0\u6d4b\u5230\u9006\u884c", camera_id, tracker)
+            msg = (
+                f"Camera {camera_id} tracker {tracker} \u68c0\u6d4b\u5230\u9006\u884c"
+            )
+            logger.warning(msg)
             wrong_way_detected = True
+            await asyncio.to_thread(
+                save_alert,
+                "wrong_way",
+                msg,
+                image_key,
+                camera_id,
+            )
 
         info = direction_stats[sign]
         info["count"] += 1
@@ -473,6 +533,9 @@ async def handle_message(msg: str) -> None:
                 severity = "severe"
             elif avg_speed < 40:
                 severity = "medium"
+            msg = (
+                f"Camera {camera_id} congestion {severity} dir {sign} (avg_speed {avg_speed:.1f} km/h count {info['count']} area_ratio {area_ratio:.2f})"
+            )
             logger.warning(
                 "Camera %s congestion %s dir %d (avg_speed %.1f km/h count %d area_ratio %.2f)",
                 camera_id,
@@ -482,10 +545,25 @@ async def handle_message(msg: str) -> None:
                 info["count"],
                 area_ratio,
             )
+            await asyncio.to_thread(
+                save_alert,
+                "congestion",
+                msg,
+                image_key,
+                camera_id,
+            )
 
     if wrong_way_ids:
+        msg = f"Camera {camera_id} wrong-way trackers: {wrong_way_ids}"
         logger.warning("Camera %s wrong-way trackers: %s", camera_id, wrong_way_ids)
         wrong_way_detected = True
+        await asyncio.to_thread(
+            save_alert,
+            "wrong_way",
+            msg,
+            image_key,
+            camera_id,
+        )
 
     if not detections:
         # Fallback when message lacks explicit shape information.
