@@ -19,17 +19,20 @@ import math
 # program no longer strictly filters by these categories so that any provided
 # label can be counted.
 VEHICLE_CATEGORIES = ["car", "Truck", "SUV", "Motor", "mianbao", "sanlun"]
-ACCIDENT_WORKFLOW_ID = 8
+ACCIDENT_WORKFLOW_ID = 52
+ACCIDENT_NODE_ID = "a3dc06bc-fd72-4941-a5c7-9be854192370"
+EXPECTED_SPEED = 50
+CAMERA_IDS = [4,42]
 CLIENT_ID = "demo_client"
-IOU_THRESHOLD = 0.1
+
+
+IOU_THRESHOLD = 0.25
+API_ENDPOINT   = os.getenv("API_SERVER", "http://s1.daoai.ca:38080")
 REDIS_SERVER_URL   = os.getenv(
     "REDIS_SERVER",
     "redis://default:mypassword@192.168.10.101:16379/0"
 )
 # expected normal traffic speed (km/h)
-EXPECTED_SPEED = 100
-ACCIDENT_NODE_ID = "5416394f-7193-409c-aec2-5f4a435317db"
-CAMERA_IDS = [4]
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -226,13 +229,6 @@ def get_latest_camera_frame(camera_id: int) -> bytes | None:
     return None
 
 
-API_ENDPOINT = os.getenv("API_SERVER", "http://localhost:38080")
-
-# workflow and node constants for traffic statistics
-TARGET_WORKFLOW_ID = int(os.getenv("TARGET_WORKFLOW_ID", "5"))
-TARGET_NODE_ID = os.getenv("TARGET_NODE_ID", "")
-
-
 
 def run_workflow(input_image: bytes, workflow_id: int, target_node_id: str | None = None) -> requests.Response:
     files = {"input_image": ("image.jpg", input_image, "image/jpeg")}
@@ -269,16 +265,6 @@ async def check_accident(image_key: str | None) -> bool:
     if data:
         return bool(data.get(ACCIDENT_NODE_ID))
     return False
-
-
-async def store_stats(camera_id: int, counts: Dict[str, int]) -> None:
-    """Placeholder for persisting vehicle counts into Redis."""
-    if redis_client is None:
-        return
-    try:
-        await redis_client.hset(f"camera:{camera_id}:counts", mapping=counts)
-    except Exception as exc:
-        logger.error("Failed to store stats to redis: %s", exc)
 
 
 async def handle_message(msg: str) -> None:
@@ -553,8 +539,6 @@ async def handle_message(msg: str) -> None:
         status,
         anomaly_msg,
     )
-
-    await store_stats(camera_id, totals)
 
 async def connect_and_listen(server: str, camera_ids: List[int]) -> None:
     """Subscribe to cameras via WebSocket and handle incoming messages."""
