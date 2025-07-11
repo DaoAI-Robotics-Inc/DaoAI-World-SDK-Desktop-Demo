@@ -25,6 +25,14 @@ EXPECTED_SPEED = 100
 CAMERA_IDS = [4,42]
 CLIENT_ID = "demo_client"
 
+# Mapping of event types to Chinese descriptions
+EVENT_TYPE_CN = {
+    "accident": "\u4ea4\u901a\u4e8b\u6545",
+    "abnormal_stop": "\u8f66\u8f86\u5f02\u5e38\u505c\u6b62",
+    "wrong_way": "\u9006\u884c",
+    "congestion": "\u62e5\u5835",
+}
+
 
 IOU_THRESHOLD = 0.25
 API_ENDPOINT   = os.getenv("API_SERVER", "http://s1.daoai.ca:38080")
@@ -246,9 +254,19 @@ def get_latest_camera_frame(camera_id: int) -> bytes | None:
     return None
 
 
-def save_alert(event_type: str, message: str, image_key: str | None, camera_id: int) -> None:
-    """Persist alert log and related image under ALERT_DIR."""
-    # print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+def save_alert(
+    event_type: str,
+    message: str,
+    image_key: str | None,
+    camera_id: int,
+    detections: List[Dict[str, object]] | None = None,
+) -> None:
+    """Persist alert log and related image under ALERT_DIR.
+
+    This now saves both the original frame and an overlay image with
+    detection results drawn on it. The log message is written in Chinese
+    and includes camera id, timestamp and event type.
+    """
     now = time.time()
     if now - SCRIPT_START_TIME < STARTUP_DELAY:
         return
@@ -260,9 +278,12 @@ def save_alert(event_type: str, message: str, image_key: str | None, camera_id: 
     ts = int(now * 1000)
     event_dir = os.path.join(ALERT_DIR, event_type)
     os.makedirs(event_dir, exist_ok=True)
+
+    event_cn = EVENT_TYPE_CN.get(event_type, event_type)
+    log_msg = f"\u6444\u50cf\u5934{camera_id} \u65f6\u95f4{ts} \u4e8b\u4ef6:{event_cn} {message}"
     log_path = os.path.join(event_dir, f"{ts}.txt")
     with open(log_path, "w", encoding="utf-8") as f:
-        f.write(message)
+        f.write(log_msg)
 
     image_bytes = None
     if image_key:
@@ -277,8 +298,45 @@ def save_alert(event_type: str, message: str, image_key: str | None, camera_id: 
     if not image_bytes:
         image_bytes = get_latest_camera_frame(camera_id)
     if image_bytes:
-        with open(os.path.join(event_dir, f"{ts}.jpg"), "wb") as img_f:
+        orig_path = os.path.join(event_dir, f"{ts}_orig.jpg")
+        with open(orig_path, "wb") as img_f:
             img_f.write(image_bytes)
+        try:
+            img = cv2.imdecode(np.frombuffer(image_bytes, np.uint8), cv2.IMREAD_COLOR)
+            if img is not None:
+                overlay = img.copy()
+                if detections:
+                    for det in detections:
+                        box = det.get("box")
+                        speed = det.get("speed")
+                        if box:
+                            x1, y1, x2, y2 = map(int, box)
+                            cv2.rectangle(overlay, (x1, y1), (x2, y2), (0, 255, 0), 2)
+                            if speed is not None:
+                                cv2.putText(
+                                    overlay,
+                                    f"{speed:.1f}",
+                                    (x1, max(0, y1 - 10)),
+                                    cv2.FONT_HERSHEY_SIMPLEX,
+                                    0.6,
+                                    (0, 255, 0),
+                                    2,
+                                )
+                cv2.putText(
+                    overlay,
+                    f"\u4e8b\u4ef6:{event_type}",
+                    (10, 30),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    1.0,
+                    (0, 0, 255),
+                    2,
+                )
+                ok, buf = cv2.imencode(".jpg", overlay)
+                if ok:
+                    with open(os.path.join(event_dir, f"{ts}_overlay.jpg"), "wb") as fov:
+                        fov.write(buf.tobytes())
+        except Exception as exc:
+            logger.error("Failed to save overlay image: %s", exc)
 
 
 API_ENDPOINT = os.getenv("API_SERVER", "http://localhost:38080")
@@ -458,6 +516,7 @@ async def handle_message(msg: str) -> None:
                                 msg,
                                 image_key,
                                 camera_id,
+                                detections,
                             )
                         else:
                             msg = (
@@ -471,6 +530,7 @@ async def handle_message(msg: str) -> None:
                                 msg,
                                 image_key,
                                 camera_id,
+                                detections,
                             )
                         entry["detected"] = True
             else:
@@ -509,6 +569,7 @@ async def handle_message(msg: str) -> None:
                 msg,
                 image_key,
                 camera_id,
+                detections,
             )
 
         info = direction_stats[sign]
@@ -558,6 +619,7 @@ async def handle_message(msg: str) -> None:
                 msg,
                 image_key,
                 camera_id,
+                detections,
             )
 
     if wrong_way_ids:
@@ -570,6 +632,7 @@ async def handle_message(msg: str) -> None:
             msg,
             image_key,
             camera_id,
+            detections,
         )
 
     if not detections:
