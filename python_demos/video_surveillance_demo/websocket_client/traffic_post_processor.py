@@ -471,7 +471,13 @@ async def handle_message(msg: str) -> None:
 
     # Tally vehicles found in this frame for reporting
     frame_counts: Dict[str, int] = defaultdict(int)
-    direction_stats: Dict[int, Dict[str, float]] = defaultdict(lambda: {"count": 0, "speed": 0.0, "area": 0.0})
+    direction_stats: Dict[int, Dict[str, float]] = defaultdict(lambda: {
+        "count": 0,
+        "speed": 0.0,
+        "area": 0.0,
+        "valid_speed_sum": 0.0,
+        "valid_speed_count": 0,
+    })
     detection_dirs: Dict[int, int] = {}
     now = time.time()
     for det in detections:
@@ -490,7 +496,7 @@ async def handle_message(msg: str) -> None:
                 speed = None
 
         # running speed history
-        if speed is not None and speed > 0:
+        if speed is not None and 5 <= speed <= 150:
             hist = speed_histories[camera_id]
             hist.append((now, speed))
             while hist and now - hist[0][0] > 10:
@@ -576,6 +582,9 @@ async def handle_message(msg: str) -> None:
         info["count"] += 1
         if speed is not None:
             info["speed"] += speed
+            if 5 <= speed <= 150:
+                info["valid_speed_sum"] += speed
+                info["valid_speed_count"] += 1
         area = (box[2] - box[0]) * (box[3] - box[1])
         info["area"] += area
 
@@ -593,7 +602,10 @@ async def handle_message(msg: str) -> None:
     for sign, info in direction_stats.items():
         if info["count"] == 0 or sign == 0:
             continue
-        avg_speed = info["speed"] / info["count"]
+        if info["valid_speed_count"]:
+            avg_speed = info["valid_speed_sum"] / info["valid_speed_count"]
+        else:
+            avg_speed = 0.0
         area_ratio = info["area"] / road_area if road_area else 0
         if avg_speed < 60 and info["count"] >= 6: # and area_ratio > 0.1:
             severity = "light"
