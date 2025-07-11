@@ -9,6 +9,7 @@ from typing import Dict, List, Tuple
 import requests
 from redis import asyncio as aioredis
 import redis
+import websockets
 import cv2
 import numpy as np
 import math
@@ -186,7 +187,9 @@ low_speed_tracker: Dict[int, Dict[int, Dict[str, float | bool]]] = defaultdict(d
 ACCIDENT_NODE_ID = "5416394f-7193-409c-aec2-5f4a435317db"
 
 r = redis.from_url(os.getenv("REDIS_URL", "redis://redis:6379/0"), decode_responses=True)
-r_server = redis.from_url(os.getenv("REDIS_SERVER", "redis://redis:6379/0"))
+r_server = redis.from_url(
+    os.getenv("REDIS_SERVER", "redis://default:mypassword@s1.daoai.ca:16379/0")
+)
 
 
 def get_redis_client():
@@ -222,9 +225,6 @@ def get_latest_camera_frame(camera_id: int) -> bytes | None:
 
 API_ENDPOINT = os.getenv("API_SERVER", "http://localhost:38080")
 
-# workflow and node constants for traffic statistics
-TARGET_WORKFLOW_ID = int(os.getenv("TARGET_WORKFLOW_ID", "5"))
-TARGET_NODE_ID = os.getenv("TARGET_NODE_ID", "")
 
 
 def run_workflow(input_image: bytes, workflow_id: int, target_node_id: str | None = None) -> requests.Response:
@@ -235,38 +235,6 @@ def run_workflow(input_image: bytes, workflow_id: int, target_node_id: str | Non
     )
 
 
-def list_target_cameras(workflow_id: int) -> List[int]:
-    """Return camera IDs associated with the given workflow."""
-    try:
-        resp = requests.get(
-            f"{API_ENDPOINT}/cameras",
-            params={"workflow_ids": workflow_id, "offset": 0, "limit": 200},
-        )
-        if resp.status_code != 200:
-            logger.error("Failed to list cameras: HTTP %d", resp.status_code)
-            return []
-        data = resp.json()
-        items = []
-        if isinstance(data, dict):
-            items = data.get("items") or data.get("cameras") or []
-        elif isinstance(data, list):
-            items = data
-        camera_ids: List[int] = []
-        for item in items:
-            cid = None
-            if isinstance(item, dict):
-                cid = item.get("id") or item.get("camera_id")
-            else:
-                cid = item
-            try:
-                if cid is not None:
-                    camera_ids.append(int(cid))
-            except Exception:
-                continue
-        return camera_ids
-    except Exception as exc:
-        logger.error("Error listing cameras: %s", exc)
-        return []
 
 
 async def check_accident(image_key: str | None) -> bool:
@@ -308,37 +276,6 @@ async def store_stats(camera_id: int, counts: Dict[str, int]) -> None:
         logger.error("Failed to store stats to redis: %s", exc)
 
 
-async def poll_and_process() -> None:
-    """Continuously fetch frames from Redis, run workflow and process results."""
-    camera_ids = list_target_cameras(TARGET_WORKFLOW_ID)
-    if not camera_ids:
-        logger.warning("No cameras found for workflow %d", TARGET_WORKFLOW_ID)
-        return
-
-    async def process_camera(cid: int) -> None:
-        while True:
-            frame = await asyncio.to_thread(get_latest_camera_frame, cid)
-            if frame is not None:
-                resp = await asyncio.to_thread(
-                    run_workflow, frame, TARGET_WORKFLOW_ID, TARGET_NODE_ID
-                )
-                try:
-                    data = resp.json()
-                except Exception as exc:
-                    logger.error("Invalid response for camera %s: %s", cid, exc)
-                    await asyncio.sleep(0.01)
-                    continue
-                await handle_message(json.dumps(data))
-                logger.info(
-                    "Camera %s 测试4: 车流量统计 | workflow(%d) \u2192 HTTP %d",
-                    cid,
-                    TARGET_WORKFLOW_ID,
-                    resp.status_code,
-                )
-            await asyncio.sleep(0.01)
-
-    tasks = [asyncio.create_task(process_camera(cid)) for cid in camera_ids]
-    await asyncio.gather(*tasks)
 
 
 async def handle_message(msg: str) -> None:
@@ -617,13 +554,41 @@ async def handle_message(msg: str) -> None:
     await store_stats(camera_id, totals)
 
 
+async def connect_and_listen(server: str, camera_ids: List[int]) -> None:
+    """Subscribe to cameras via WebSocket and handle incoming messages."""
+    uri = f"{server.rstrip('/')}" + f"/stream/ws?client_id={CLIENT_ID}"
+    while True:
+        try:
+            async with websockets.connect(uri) as websocket:
+                await websocket.send(
+                    json.dumps({"action": "subscribe", "camera_ids": camera_ids})
+                )
+                logger.info("Subscribed to cameras %s", camera_ids)
+                while True:
+                    try:
+                        message = await websocket.recv()
+                        await handle_message(message)
+                    except websockets.ConnectionClosed:
+                        logger.warning("WebSocket closed, reconnecting...")
+                        break
+                    except Exception as exc:
+                        logger.error("Error handling message: %s", exc)
+            await asyncio.sleep(1)
+        except Exception as exc:
+            logger.error("Connection error: %s", exc)
+            await asyncio.sleep(5)
+
+
 async def _main_async() -> None:
-    """Initialize Redis client and start polling loop."""
+    """Initialize Redis client and start WebSocket listener."""
     global redis_client
     redis_client = aioredis.from_url(
         os.getenv("REDIS_URL", "redis://redis:6379/0"), decode_responses=True
     )
-    await poll_and_process()
+    server = os.getenv("WS_SERVER", "ws://localhost:38080")
+    camera_ids_env = os.getenv("CAMERA_IDS", "")
+    camera_ids = [int(cid) for cid in camera_ids_env.split(',') if cid]
+    await connect_and_listen(server, camera_ids)
 
 
 def main() -> None:
