@@ -534,30 +534,34 @@ async def handle_message(msg: str) -> None:
         avg_speed = info["speed"] / info["count"]
         area_ratio = info["area"] / road_area if road_area else 0
         if avg_speed < 60 and info["count"] >= 6 and area_ratio > 0.5:
+            ratio = avg_speed_overall / EXPECTED_SPEED * 100 if EXPECTED_SPEED else 0
             severity = "light"
-            if avg_speed < 20:
+            if ratio < 20 or avg_speed < EXPECTED_SPEED * 0.2:
                 severity = "severe"
-            elif avg_speed < 40:
+            elif ratio < 40 or avg_speed < EXPECTED_SPEED * 0.4:
                 severity = "medium"
             msg = (
-                f"Camera {camera_id} congestion {severity} dir {sign} (avg_speed {avg_speed:.1f} km/h count {info['count']} area_ratio {area_ratio:.2f})"
+                f"Camera {camera_id} congestion {severity} dir {sign} (avg_speed {avg_speed:.1f} km/h ratio {ratio:.1f}% count {info['count']} area_ratio {area_ratio:.2f})"
             )
             logger.warning(
-                "Camera %s congestion %s dir %d (avg_speed %.1f km/h count %d area_ratio %.2f)",
+                "Camera %s congestion %s dir %d (avg_speed %.1f km/h ratio %.1f%% count %d area_ratio %.2f)",
                 camera_id,
                 severity,
                 sign,
                 avg_speed,
+                ratio,
                 info["count"],
                 area_ratio,
             )
-            await asyncio.to_thread(
-                save_alert,
-                "congestion",
-                msg,
-                image_key,
-                camera_id,
-            )
+            if severity in {"medium", "severe"}:
+                await asyncio.to_thread(
+                    save_alert,
+                    f"congestion_{severity}",
+                    msg,
+                    image_key,
+                    camera_id,
+                )
+
 
     if wrong_way_ids:
         msg = f"Camera {camera_id} wrong-way trackers: {wrong_way_ids}"
