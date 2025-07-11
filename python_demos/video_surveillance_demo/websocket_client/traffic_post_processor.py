@@ -21,7 +21,7 @@ import math
 VEHICLE_CATEGORIES = ["car", "Truck", "SUV", "Motor", "mianbao", "sanlun"]
 ACCIDENT_WORKFLOW_ID = 52
 ACCIDENT_NODE_ID = "a3dc06bc-fd72-4941-a5c7-9be854192370"
-EXPECTED_SPEED = 50
+EXPECTED_SPEED = 100
 CAMERA_IDS = [4,42]
 CLIENT_ID = "demo_client"
 
@@ -248,6 +248,7 @@ def get_latest_camera_frame(camera_id: int) -> bytes | None:
 
 def save_alert(event_type: str, message: str, image_key: str | None, camera_id: int) -> None:
     """Persist alert log and related image under ALERT_DIR."""
+    # print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
     now = time.time()
     if now - SCRIPT_START_TIME < STARTUP_DELAY:
         return
@@ -533,7 +534,7 @@ async def handle_message(msg: str) -> None:
             continue
         avg_speed = info["speed"] / info["count"]
         area_ratio = info["area"] / road_area if road_area else 0
-        if avg_speed < 60 and info["count"] >= 6 and area_ratio > 0.5:
+        if avg_speed < 60 and info["count"] >= 6: # and area_ratio > 0.1:
             severity = "light"
             if avg_speed < 20:
                 severity = "severe"
