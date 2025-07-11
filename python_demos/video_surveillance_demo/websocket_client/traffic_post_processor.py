@@ -19,8 +19,17 @@ import math
 # program no longer strictly filters by these categories so that any provided
 # label can be counted.
 VEHICLE_CATEGORIES = ["car", "Truck", "SUV", "Motor", "mianbao", "sanlun"]
-
+ACCIDENT_WORKFLOW_ID = 8
 CLIENT_ID = "demo_client"
+IOU_THRESHOLD = 0.1
+REDIS_SERVER_URL   = os.getenv(
+    "REDIS_SERVER",
+    "redis://default:mypassword@192.168.10.101:16379/0"
+)
+# expected normal traffic speed (km/h)
+EXPECTED_SPEED = 100
+ACCIDENT_NODE_ID = "5416394f-7193-409c-aec2-5f4a435317db"
+CAMERA_IDS = [4]
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -99,7 +108,7 @@ def compute_speeds_inplace(
     polygon: List[Tuple[float, float]],
     edge_distances: List[float],
     states: Dict[int, Dict[str, object]],
-    smoothing_window: int = 1,
+    smoothing_window: int = 2,
     unit: str = "kmh",
 ) -> None:
     H = _compute_homography(polygon, edge_distances)
@@ -175,16 +184,10 @@ def ensure_speed_config(camera_id: int, data: Dict[str, object]) -> None:
 
 
 
-IOU_THRESHOLD = 0.1
-
-# expected normal traffic speed (km/h)
-EXPECTED_SPEED = 100
-
 # track low speed info per tracker
 # Each entry stores a mapping of tracker_id -> {"start": timestamp, "detected": bool}
 low_speed_tracker: Dict[int, Dict[int, Dict[str, float | bool]]] = defaultdict(dict)
 
-ACCIDENT_NODE_ID = "5416394f-7193-409c-aec2-5f4a435317db"
 
 r = redis.from_url(os.getenv("REDIS_URL", "redis://redis:6379/0"), decode_responses=True)
 r_server = redis.from_url(
@@ -257,7 +260,7 @@ async def check_accident(image_key: str | None) -> bool:
         return False
 
     def _call():
-        resp = run_workflow(image_bytes, 12, ACCIDENT_NODE_ID)
+        resp = run_workflow(image_bytes, ACCIDENT_WORKFLOW_ID, ACCIDENT_NODE_ID)
         if resp.status_code == 200:
             return resp.json()
         return None
@@ -556,6 +559,7 @@ async def handle_message(msg: str) -> None:
 async def connect_and_listen(server: str, camera_ids: List[int]) -> None:
     """Subscribe to cameras via WebSocket and handle incoming messages."""
     uri = f"{server.rstrip('/')}" + f"/stream/ws?client_id={CLIENT_ID}"
+    print(uri, camera_ids)
     while True:
         try:
             async with websockets.connect(uri) as websocket:
@@ -575,7 +579,7 @@ async def connect_and_listen(server: str, camera_ids: List[int]) -> None:
             await asyncio.sleep(1)
         except Exception as exc:
             logger.error("Connection error: %s", exc)
-            await asyncio.sleep(5)
+            await asyncio.sleep(2)
 
 async def _main_async() -> None:
     """Initialize Redis client and start WebSocket listener."""
@@ -583,10 +587,8 @@ async def _main_async() -> None:
     redis_client = aioredis.from_url(
         os.getenv("REDIS_URL", "redis://redis:6379/0"), decode_responses=True
     )
-    server = os.getenv("WS_SERVER", "ws://localhost:38080")
-    camera_ids_env = os.getenv("CAMERA_IDS", "")
-    camera_ids = [int(cid) for cid in camera_ids_env.split(',') if cid]
-    await connect_and_listen(server, camera_ids)
+    server = os.getenv("WS_SERVER", "ws://s1.daoai.ca:48080")
+    await connect_and_listen(server, CAMERA_IDS)
 
 def main() -> None:
     try:
