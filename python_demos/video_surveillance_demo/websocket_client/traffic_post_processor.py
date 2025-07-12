@@ -21,7 +21,7 @@ import math
 VEHICLE_CATEGORIES = ["car", "Truck", "SUV", "Motor", "mianbao", "sanlun"]
 ACCIDENT_WORKFLOW_ID = 52
 ACCIDENT_NODE_ID = "a3dc06bc-fd72-4941-a5c7-9be854192370"
-EXPECTED_SPEED = 100
+EXPECTED_SPEED = 50
 CAMERA_IDS = [4,42]
 CLIENT_ID = "demo_client"
 

@@ -53,4 +53,5 @@ cs_demos/WinFormsApp1/source
 cpp_demos/DW_SDK_Cpp_Example/DW AutoSegmentation/x64
 cs_demos/auto_segment/auto_segment/bin
 cs_demos/auto_segment/auto_segment/obj
-
+python_demos/video_surveillance_demo/websocket_client/alert
+python_demos/video_surveillance_demo/websocket_client/logs.txt
