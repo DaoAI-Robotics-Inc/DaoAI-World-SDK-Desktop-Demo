@@ -20,6 +20,7 @@ import math
 # label can be counted.  The generic "vehicle" label is ignored when tallying
 # totals to avoid double counting both the parent and child categories. Only the
 # following subclasses are counted in statistics.
+
 VEHICLE_CATEGORIES = ["car", "Truck", "SUV", "Motor", "mianbao", "sanlun"]
 # Normalised set of allowed vehicle subclasses for quick membership testing
 VEHICLE_SET = {v.lower() for v in VEHICLE_CATEGORIES}
