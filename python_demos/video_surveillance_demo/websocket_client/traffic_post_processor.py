@@ -18,8 +18,12 @@ import math
 # when attempting to categorise a detected vehicle from the flags field. The
 # program no longer strictly filters by these categories so that any provided
 # label can be counted.  The generic "vehicle" label is ignored when tallying
-# totals to avoid double counting both the parent and child categories.
+# totals to avoid double counting both the parent and child categories. Only the
+# following subclasses are counted in statistics.
+
 VEHICLE_CATEGORIES = ["car", "Truck", "SUV", "Motor", "mianbao", "sanlun"]
+# Normalised set of allowed vehicle subclasses for quick membership testing
+VEHICLE_SET = {v.lower() for v in VEHICLE_CATEGORIES}
 ACCIDENT_WORKFLOW_ID = 52
 ACCIDENT_NODE_ID = "a3dc06bc-fd72-4941-a5c7-9be854192370"
 EXPECTED_SPEED = 50
@@ -422,7 +426,8 @@ async def handle_message(msg: str) -> None:
         # some nodes expose detections under "predictions" rather than "shapes"
         shapes = node.get("predictions") or node.get("shapes") or []
         for shape in shapes:
-            if str(shape.get("label", "")).lower() != "vehicle":
+            label = str(shape.get("label", "")).lower()
+            if label not in VEHICLE_SET and label != "vehicle":
                 continue
             tracker = shape.get("tracker_id")
             key_id = tracker if tracker is not None else id(shape)
@@ -483,7 +488,7 @@ async def handle_message(msg: str) -> None:
     now = time.time()
     for det in detections:
         cls = det.get("cls")
-        if cls and cls != "vehicle":
+        if cls in VEHICLE_SET:
             frame_counts[cls] += 1
 
         box = det.get("box")
@@ -659,10 +664,7 @@ async def handle_message(msg: str) -> None:
             or data.get("label")
         )
         vehicle_cls = str(vehicle_cls).lower() if vehicle_cls else None
-        if (
-            vehicle_cls
-            and vehicle_cls not in {"people", "person", "pedestrian", "vehicle"}
-        ):
+        if vehicle_cls in VEHICLE_SET:
             vehicle_counts[camera_id][vehicle_cls] += 1
         previous_boxes[camera_id] = []
     else:
@@ -676,7 +678,7 @@ async def handle_message(msg: str) -> None:
                 if iou(box, prev_box) >= IOU_THRESHOLD:
                     matched = True
                     break
-            if not matched and cls and cls != "vehicle":
+            if not matched and cls in VEHICLE_SET:
                 vehicle_counts[camera_id][cls] += 1
             new_boxes.append((box, cls or ""))
         previous_boxes[camera_id] = new_boxes
