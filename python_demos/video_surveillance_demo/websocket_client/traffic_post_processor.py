@@ -432,15 +432,25 @@ async def handle_message(msg: str) -> None:
             items = result if isinstance(result, list) else [result]
             for item in items:
                 speed_val = None
+                det: Dict[str, object] = {}
                 if isinstance(item, dict):
                     for k in ("speed", "value"):
                         if k in item:
                             speed_val = item[k]
                             break
+                    pts = item.get("points")
+                    if pts and len(pts) == 2:
+                        det["box"] = (
+                            float(pts[0][0]),
+                            float(pts[0][1]),
+                            float(pts[1][0]),
+                            float(pts[1][1]),
+                        )
                 else:
                     speed_val = item
                 try:
                     if speed_val is not None and float(speed_val) < 0:
+                        det["speed"] = float(speed_val)
                         msg = f"Camera {camera_id} \u68c0\u6d4b\u5230\u9006\u884c"
                         logger.warning(msg)
                         wrong_way_detected = True
@@ -450,7 +460,7 @@ async def handle_message(msg: str) -> None:
                             msg,
                             image_key,
                             camera_id,
-                            [],
+                            [det] if det else [],
                         )
                         break
                 except Exception:
