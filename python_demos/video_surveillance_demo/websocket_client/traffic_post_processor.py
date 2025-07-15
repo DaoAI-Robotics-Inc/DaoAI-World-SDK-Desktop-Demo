@@ -87,8 +87,6 @@ speed_states: Dict[int, Dict[int, Dict[str, object]]] = defaultdict(dict)
 
 # configuration for speed computation per camera
 speed_configs: Dict[int, Dict[str, object]] = {}
-# node uid that reports movement speed per camera
-speed_node_ids: Dict[int, str] = {}
 
 # Placeholder redis client for persisting statistics
 redis_client: aioredis.Redis | None = None
@@ -189,7 +187,7 @@ def ensure_speed_config(camera_id: int, data: Dict[str, object]) -> None:
     if camera_id in speed_configs:
         return
     node_defs = data.get("node_defs", {})
-    for uid, node in node_defs.items():
+    for node in node_defs.values():
         if not isinstance(node, dict):
             continue
         if node.get("type") != "dataProcessing":
@@ -214,7 +212,6 @@ def ensure_speed_config(camera_id: int, data: Dict[str, object]) -> None:
             "unit": unit,
             "smoothing_window": smoothing,
         }
-        speed_node_ids[camera_id] = str(uid)
         break
 
 
@@ -332,7 +329,7 @@ def save_alert(
                                 )
                 cv2.putText(
                     overlay,
-                    f"Accident Type:{event_type}",
+                    f"\u4e8b\u4ef6:{event_type}",
                     (10, 30),
                     cv2.FONT_HERSHEY_SIMPLEX,
                     1.0,
@@ -422,50 +419,6 @@ async def handle_message(msg: str) -> None:
     image_h = data.get("image_height") or 1
     road_area = float(image_w * image_h)
 
-    # check for negative speeds reported directly in the configured speed node
-    speed_node_id = speed_node_ids.get(camera_id)
-    if speed_node_id:
-        node = node_outputs.get(speed_node_id)
-        print(node)
-        if isinstance(node, dict):
-            result = node.get("predictions") or node.get("shapes")
-            items = result if isinstance(result, list) else [result]
-            for item in items:
-                speed_val = None
-                det: Dict[str, object] = {}
-                if isinstance(item, dict):
-                    for k in ("speed", "value"):
-                        if k in item:
-                            speed_val = item[k]
-                            break
-                    pts = item.get("points")
-                    if pts and len(pts) == 2:
-                        det["box"] = (
-                            float(pts[0][0]),
-                            float(pts[0][1]),
-                            float(pts[1][0]),
-                            float(pts[1][1]),
-                        )
-                else:
-                    speed_val = item
-                try:
-                    if speed_val is not None and float(speed_val) < 0:
-                        det["speed"] = float(speed_val)
-                        msg = f"Camera {camera_id} \u68c0\u6d4b\u5230\u9006\u884c"
-                        logger.warning(msg)
-                        wrong_way_detected = True
-                        await asyncio.to_thread(
-                            save_alert,
-                            "wrong_way",
-                            msg,
-                            image_key,
-                            camera_id,
-                            [det] if det else [],
-                        )
-                        break
-                except Exception:
-                    continue
-
     detections_by_tracker: Dict[int, Dict[str, object]] = {}
     for node in node_outputs.values():
         if not isinstance(node, dict):
@@ -531,6 +484,7 @@ async def handle_message(msg: str) -> None:
         "valid_speed_sum": 0.0,
         "valid_speed_count": 0,
     })
+    detection_dirs: Dict[int, int] = {}
     now = time.time()
     for det in detections:
         cls = det.get("cls")
@@ -614,7 +568,9 @@ async def handle_message(msg: str) -> None:
                     elif dy < 0:
                         sign = -1
             track_centers[camera_id][tracker] = center
-        if speed is not None and speed < 0:
+        detection_dirs[tracker or -1] = sign
+
+        if speed is not None and speed < -5:
             msg = (
                 f"Camera {camera_id} tracker {tracker} \u68c0\u6d4b\u5230\u9006\u884c"
             )
@@ -642,6 +598,12 @@ async def handle_message(msg: str) -> None:
     # compute stats after iterating detections
     hist = speed_histories[camera_id]
     avg_speed_overall = sum(s for _, s in hist) / len(hist) if hist else 0.0
+
+    majority_sign = 0
+    if direction_stats:
+        majority_sign = max(direction_stats.items(), key=lambda kv: kv[1]["count"])[0]
+
+    wrong_way_ids = [tid for tid, s in detection_dirs.items() if majority_sign and s == -majority_sign and tid != -1]
 
     # Congestion detection per direction
     for sign, info in direction_stats.items():
@@ -679,7 +641,18 @@ async def handle_message(msg: str) -> None:
                 detections,
             )
 
-
+    if wrong_way_ids:
+        msg = f"Camera {camera_id} wrong-way trackers: {wrong_way_ids}"
+        logger.warning("Camera %s wrong-way trackers: %s", camera_id, wrong_way_ids)
+        wrong_way_detected = True
+        await asyncio.to_thread(
+            save_alert,
+            "wrong_way",
+            msg,
+            image_key,
+            camera_id,
+            detections,
+        )
 
     if not detections:
         # Fallback when message lacks explicit shape information.
