@@ -332,7 +332,7 @@ def save_alert(
                                 )
                 cv2.putText(
                     overlay,
-                    f"\u4e8b\u4ef6:{event_type}",
+                    f"Accident Type:{event_type}",
                     (10, 30),
                     cv2.FONT_HERSHEY_SIMPLEX,
                     1.0,
@@ -426,8 +426,9 @@ async def handle_message(msg: str) -> None:
     speed_node_id = speed_node_ids.get(camera_id)
     if speed_node_id:
         node = node_outputs.get(speed_node_id)
+        print(node)
         if isinstance(node, dict):
-            result = node.get("result")
+            result = node.get("predictions") or node.get("shapes")
             items = result if isinstance(result, list) else [result]
             for item in items:
                 speed_val = None
