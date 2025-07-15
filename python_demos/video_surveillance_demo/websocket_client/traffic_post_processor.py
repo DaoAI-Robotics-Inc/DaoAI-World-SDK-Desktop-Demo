@@ -87,6 +87,8 @@ speed_states: Dict[int, Dict[int, Dict[str, object]]] = defaultdict(dict)
 
 # configuration for speed computation per camera
 speed_configs: Dict[int, Dict[str, object]] = {}
+# node uid that reports movement speed per camera
+speed_node_ids: Dict[int, str] = {}
 
 # Placeholder redis client for persisting statistics
 redis_client: aioredis.Redis | None = None
@@ -187,7 +189,7 @@ def ensure_speed_config(camera_id: int, data: Dict[str, object]) -> None:
     if camera_id in speed_configs:
         return
     node_defs = data.get("node_defs", {})
-    for node in node_defs.values():
+    for uid, node in node_defs.items():
         if not isinstance(node, dict):
             continue
         if node.get("type") != "dataProcessing":
@@ -212,6 +214,7 @@ def ensure_speed_config(camera_id: int, data: Dict[str, object]) -> None:
             "unit": unit,
             "smoothing_window": smoothing,
         }
+        speed_node_ids[camera_id] = str(uid)
         break
 
 
@@ -419,41 +422,38 @@ async def handle_message(msg: str) -> None:
     image_h = data.get("image_height") or 1
     road_area = float(image_w * image_h)
 
-    # check for negative speeds reported directly in node results
-    for node in node_outputs.values():
-        if not isinstance(node, dict):
-            continue
-        result = node.get("result")
-        if result is None:
-            continue
-        items = result if isinstance(result, list) else [result]
-        for item in items:
-            speed_val = None
-            if isinstance(item, dict):
-                for k in ("speed", "value"):
-                    if k in item:
-                        speed_val = item[k]
+    # check for negative speeds reported directly in the configured speed node
+    speed_node_id = speed_node_ids.get(camera_id)
+    if speed_node_id:
+        node = node_outputs.get(speed_node_id)
+        if isinstance(node, dict):
+            result = node.get("result")
+            items = result if isinstance(result, list) else [result]
+            for item in items:
+                speed_val = None
+                if isinstance(item, dict):
+                    for k in ("speed", "value"):
+                        if k in item:
+                            speed_val = item[k]
+                            break
+                else:
+                    speed_val = item
+                try:
+                    if speed_val is not None and float(speed_val) < 0:
+                        msg = f"Camera {camera_id} \u68c0\u6d4b\u5230\u9006\u884c"
+                        logger.warning(msg)
+                        wrong_way_detected = True
+                        await asyncio.to_thread(
+                            save_alert,
+                            "wrong_way",
+                            msg,
+                            image_key,
+                            camera_id,
+                            [],
+                        )
                         break
-            else:
-                speed_val = item
-            try:
-                if speed_val is not None and float(speed_val) < 0:
-                    msg = f"Camera {camera_id} \u68c0\u6d4b\u5230\u9006\u884c"
-                    logger.warning(msg)
-                    wrong_way_detected = True
-                    await asyncio.to_thread(
-                        save_alert,
-                        "wrong_way",
-                        msg,
-                        image_key,
-                        camera_id,
-                        [],
-                    )
-                    break
-            except Exception:
-                continue
-        if wrong_way_detected:
-            break
+                except Exception:
+                    continue
 
     detections_by_tracker: Dict[int, Dict[str, object]] = {}
     for node in node_outputs.values():
