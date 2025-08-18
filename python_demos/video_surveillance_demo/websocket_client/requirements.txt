@@ -1,8 +1,3 @@
+aiohttp
 redis
 websockets
-boto3
-boto3-stubs[full]
-psycopg2-binary
-redis
-requests
-aiohttp

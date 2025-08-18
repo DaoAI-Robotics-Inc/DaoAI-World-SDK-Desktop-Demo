@@ -2,7 +2,7 @@ import os
 
 import requests
 
-API_ENDPOINT = os.getenv("API_SERVER", "http://192.168.10.101:38080")
+API_ENDPOINT = os.getenv("API_SERVER", "http://s1.daoai.ca:38080")
 
 def run_workflow(
     input_image: bytes, workflow_id: int, target_node_id: str | None = None
@@ -21,7 +21,7 @@ import redis
 
 
 r_server = redis.from_url(
-    os.getenv("REDIS_SERVER", "redis://default:mypassword@192.168.10.101:16379/0")
+    os.getenv("REDIS_SERVER", "redis://default:mypassword@s1.daoai.ca:16379/0")
 )
 
 def get_key(camera_id, timestamp):
@@ -40,3 +40,5 @@ def get_latest_camera_frame(camera_id):
     max_timestamp = max(timestamps)
     return get_camera_frame(camera_id, max_timestamp)
 
+
+print(get_latest_camera_frame(4))
